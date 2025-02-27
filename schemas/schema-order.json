@@ -1,0 +1,17 @@
+[
+  "meta-data.graphql",
+  {
+    "name": "auth",
+    "files": ["auth.graphql", "citizen.graphql"]
+  },
+  "language.graphql",
+  "name.graphql",
+  "person.graphql",
+  "sources.graphql",
+  "geo.graphql",
+  "date-time.graphql",
+  "country.graphql",
+  "public-policy-domains.graphql"
+]
+
+

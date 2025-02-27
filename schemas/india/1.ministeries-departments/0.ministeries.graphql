@@ -1,0 +1,72 @@
+# CREATE_NEW:
+# 1. when new government is elected
+# 2. when new PM is added to existing loksabha
+# 3. minister is changed?
+# links to all departments in a certain government
+# #YET_TO_FIGURE_OUT may need dated versions? to create the timelines.
+
+type _Indian_Union_Government_Ministry_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "indian_union_government_ministry")
+
+  # broad categories for public policy.  *:* relation with ministries
+  # e.g. health, fisheries, agriculture, road infrastructure
+  policy_domains: [_Public_Policy_Domain_]
+
+  # objective is self updated listing that connects to all ministries in the domain
+  policy_domain_ministries_list: [_Public_Policy_Domain_Government_Ministries_Departments_]
+    @hasInverse(field: "indian_union_government_ministries")
+
+  union_government: _Indian_Union_Government_ @hasInverse(field: "ministries")
+
+  minister: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "ministry")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "ministry")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "ministry")
+
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "ministries")
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "ministries")
+
+  departments: [_Indian_Union_Government_Department_] @hasInverse(field: "ministry")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# subordinate to ministries.
+# corresponds to the executive part that is not directly controlled by the elected representatives
+# can have versions. for now just list the latest ones.
+type _Indian_Union_Government_Department_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "indian_union_government_department")
+
+  # broad categories for public policy.  *:* relation with ministries
+  # e.g. health, fisheries, agriculture, road infrastructure
+  policy_domains: [_Public_Policy_Domain_]
+
+  # objective is self updated listing that connects to all ministries in the domain
+  policy_domain_departments_list: [_Public_Policy_Domain_Government_Ministries_Departments_]
+    @hasInverse(field: "indian_union_government_departments")
+
+  union_government: _Indian_Union_Government_ @hasInverse(field: "departments")
+  ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "departments")
+
+  parent_department: [_Indian_Union_Government_Department_] @hasInverse(field: "child_departments")
+  child_departments: [_Indian_Union_Government_Department_] @hasInverse(field: "parent_department")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
