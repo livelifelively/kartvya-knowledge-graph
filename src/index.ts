@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const SCHEMA_DIR = path.join(__dirname, '../schemas');
 const DIST_DIR = path.join(__dirname, '../dist');
 const OUTPUT_SCHEMA_PATH = path.join(DIST_DIR, 'schema.combined.graphql');
-const SCHEMA_ORDER_PATH = path.join(SCHEMA_DIR, 'schema-order.json');
+const SCHEMA_ORDER_PATH = path.join(__dirname, 'schema-order.json');
 
 // Define types for better type safety
 interface GraphQLFile {
