@@ -33,7 +33,44 @@ export const schemaOrder: SchemaOrderConfig = [
   
   // Country-specific schemas
   "country.graphql",
+
+  "government-system-types.graphql",
   
   // Domain specific schemas
-  "public-policy-domains.graphql"
+  "public-policy-domains.graphql",
+
+  "legal-document.graphql",
+
+  {
+    name: "india",
+    files: [
+      "indian-government.graphql",
+      "parliament.graphql",
+      {
+        name: "elections",
+        files: [
+          "elections.graphql",
+          "political-parties.graphql",
+        ]
+      },
+      {
+        name: "ministeries-departments",
+        files: [
+          "ministeries.graphql",
+          "health.graphql"
+        ]
+      },
+      {
+        name: "regions",
+        files: [
+          "meta-data.graphql",
+          "state-union-territory.graphql",
+          "district.graphql",
+          "loksabha-constituency.graphql",
+          "vidhansabha-constituency.graphql",
+          "sub-district.graphql",
+        ]
+      }
+    ]
+  }
 ]; 
