@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import chalk from 'chalk'; // TypeScript properly handles ESM imports
+import { schemaOrder } from './schema-order.js'; // Note the .js extension for ES modules
 
 // Get equivalent of __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -11,7 +12,6 @@ const __dirname = path.dirname(__filename);
 const SCHEMA_DIR = path.join(__dirname, '../schemas');
 const DIST_DIR = path.join(__dirname, '../dist');
 const OUTPUT_SCHEMA_PATH = path.join(DIST_DIR, 'schema.combined.graphql');
-const SCHEMA_ORDER_PATH = path.join(__dirname, 'schema-order.json');
 
 // Define types for better type safety
 interface GraphQLFile {
@@ -20,12 +20,9 @@ interface GraphQLFile {
   prefix: number;
 }
 
-interface DirectoryConfig {
-  name: string;
-  files: (string | DirectoryConfig)[];
-}
-
-type SchemaOrderConfig = (string | DirectoryConfig)[];
+// We've moved these types to types.ts, but they're still needed here
+// so we're importing them or redeclaring them
+import { type DirectoryConfig, type SchemaOrderConfig } from './types.js';
 
 interface ConfigMatch {
   found: boolean;
@@ -72,17 +69,11 @@ function getAllGraphQLFiles(dir: string, fileList: GraphQLFile[] = [], baseDir: 
   return fileList;
 }
 
-// Load schema order from JSON file if it exists
+// Replace the loadSchemaOrder function with a simpler one that uses the imported config
 function loadSchemaOrder(): SchemaOrderConfig | null {
-  if (fs.existsSync(SCHEMA_ORDER_PATH)) {
-    try {
-      const orderData = JSON.parse(fs.readFileSync(SCHEMA_ORDER_PATH, 'utf8')) as SchemaOrderConfig;
-      console.log(chalk.blue('Using schema-order.json for file ordering'));
-      return orderData;
-    } catch (error) {
-      console.error(chalk.red(`Error reading schema order file: ${(error as Error).message}`));
-      console.log(chalk.yellow('Falling back to numeric prefix ordering'));
-    }
+  if (schemaOrder) {
+    console.log(chalk.blue('Using TypeScript schema order configuration'));
+    return schemaOrder;
   }
   return null;
 }
