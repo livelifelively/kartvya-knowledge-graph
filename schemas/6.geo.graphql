@@ -1,0 +1,60 @@
+enum _Location_Or_Region_Category_ {
+  Location
+  Region
+}
+
+enum _Geo_Precision_ {
+  # e.g. countries in world map on low res map image
+  Extra_Low
+  Low
+  Medium
+  High
+  Very_High
+  Near_Real_World
+}
+
+# the "WHERE" of 5W1H
+# #ENTRY_NODE
+# tile by tile geo information and how its related to political regions
+type _Geo_ {
+  id: ID!
+  # CHANGE: not to include category, if has location,
+  category: _Location_Or_Region_Category_ @search(by: [exact])
+
+  source: _Source_Data_ @hasInverse(field: "geo")
+
+  # if the category is location
+  location: Point @search
+
+  # if the category is region
+  area: MultiPolygon @search
+
+  # how close to real the map data is. kind of like confidence score
+  precision: Int @search
+
+  country_boundary_actual: _Country_Region_ @hasInverse(field: "geo_boundary_self_actual")
+  country_boundary_self_official: _Country_Region_ @hasInverse(field: "geo_boundary_self_official")
+  country_boundary_world_official: _Country_Region_ @hasInverse(field: "geo_boundary_world_official")
+
+  india_zonal_council_divisions: _Country_Region_ @hasInverse(field: "geo_country_divisions_zonal_council")
+  india_state_union_territory_divisions: _Country_Region_
+    @hasInverse(field: "geo_country_divisions_state_union_territory")
+  india_district_divisions: _Country_Region_ @hasInverse(field: "geo_country_divisions_district")
+  india_vidhansabha_constituency_divisions: _Country_Region_
+    @hasInverse(field: "geo_country_divisions_loksabha_constituency")
+  india_loksabha_constituency_divisions: _Country_Region_
+    @hasInverse(field: "geo_country_divisions_vidhansabha_constituency")
+
+  indian_states_union_territory_boundary: _Indian_State_Union_Territory_Version_Region_
+    @hasInverse(field: "geo_boundary")
+  indian_district_boundary: _Indian_District_Version_Region_ @hasInverse(field: "geo_boundary")
+  indian_sub_district_boundary: _Indian_Sub_District_Version_Region_ @hasInverse(field: "geo_boundary")
+
+  indian_loksabha_constituency_boundary: _Indian_Loksabha_Constituency_Version_Region_
+    @hasInverse(field: "geo_boundary")
+  indian_vidhansabha_constituency_boundary: _Indian_Vidhansabha_Constituency_Version_Region_
+    @hasInverse(field: "geo_boundary")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

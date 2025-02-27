@@ -1,0 +1,111 @@
+# the "WHAT" of 5W1H.
+# will have to have multiple node types for the events.
+#
+type _Country_Event_ {
+  id: ID!
+
+  # if involves multiple countrys
+  country: [_Country_] @hasInverse(field: "events")
+
+  # specific to this event. should be able to identify the event and country.
+  # would be best if the value can be unique, though not setting that as a condition as of now.
+  names: [_Name_] @hasInverse(field: "country_event")
+  description: String! @search(by: [exact, fulltext, term])
+
+  # broad categories. "term criteria": can be applicable to any country.
+  # "Declared Independence", "Civil War", "Independence Day", "Declared as Republic", "Declared War", "Hoasted Olympic", "Launched a Sattelite"
+  # cannot be an enum (at least at this point) since can have too many values,
+  # unless we reach a point where we have a sure number which may not change much.
+  event_type: String! @search(by: [exact, fulltext, term])
+
+  # time range event or one time
+  one_time_event: Boolean
+
+  datetime_from: _Date_Time_! @hasInverse(field: "from_datetime_country_event")
+  datetime_to: _Date_Time_ @hasInverse(field: "to_datetime_country_event")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Country_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_!]! @hasInverse(field: "country")
+
+  regions: [_Country_Region_] @hasInverse(field: "country")
+
+  government: _Country_Government_ @hasInverse(field: "governs_country")
+
+  events: [_Country_Event_] @hasInverse(field: "country")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# political regions associated with and within a country
+type _Country_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  country: _Country_ @hasInverse(field: "regions")
+
+  # date on which the region changed
+  # e.g. sikkim added to India
+  # version: DateTime @search
+
+  established: _Country_Event_
+  disestablished: _Country_Event_
+
+  # how the country region related to other region types
+  # capital: [_Countryal_Capital_City_]
+  # zonal_council: [_IN_Zonal_Council_Region_] @hasInverse(field: "country")
+  # state: [_IN_State_Region_] @hasInverse(field: "country")
+  # union_territory: [_IN_Union_Territory_Region_] @hasInverse(field: "country")
+
+  # array because, there can be multiple version with varying precision.
+  # low precision for maps, high precicion for search and computation
+  geo_boundary_self_actual: [_Geo_] @hasInverse(field: "country_boundary_actual")
+
+  # boundaries recognized by the national authorities
+  # e.g. PoK is part of India as per Indian government, although its not under GOI administration
+  geo_boundary_self_official: [_Geo_] @hasInverse(field: "country_boundary_self_official")
+  # a country may accept or reject borders of certain countries based on its foriegn policy
+  # this is the world map as per the country
+  geo_boundary_world_official: [_Geo_] @hasInverse(field: "country_boundary_world_official")
+
+  geo_country_divisions_zonal_council: [_Geo_] @hasInverse(field: "india_zonal_council_divisions")
+  geo_country_divisions_state_union_territory: [_Geo_] @hasInverse(field: "india_state_union_territory_divisions")
+  geo_country_divisions_district: [_Geo_] @hasInverse(field: "india_district_divisions")
+  geo_country_divisions_loksabha_constituency: [_Geo_] @hasInverse(field: "india_vidhansabha_constituency_divisions")
+  geo_country_divisions_vidhansabha_constituency: [_Geo_] @hasInverse(field: "india_loksabha_constituency_divisions")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Country_Government_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # Government of India, भारत सरकार
+  names: [_Name_!]! @hasInverse(field: "country_government")
+
+  governs_country: _Country_ @hasInverse(field: "government")
+
+  # official declaration of government system
+  active_government_system_type_official: _Government_System_Type_ @hasInverse(field: "active_official_system_type_of")
+
+  # world country governments
+  # to add country specific data to each one
+  # one country can have had variety of government systems in the past
+  # individual type can help adapt to the country specific needs
+  # e.g. India had in the past, a dominion government, provisional government, british-colony government, east indian company government
+  india_government_system_active: _Indian_Government_System_ @hasInverse(field: "country")
+  # india_government_system_active: [_Indian_Government_System_] @hasInverse(field: "country")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

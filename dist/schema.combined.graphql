@@ -1,0 +1,2162 @@
+# COMBINED SCHEMA
+# Auto-generated from schema files
+
+
+# ----- 0.meta-data.graphql ----- 
+type _Node_Update_ {
+  id: ID!
+  comment: String
+  updated_on: DateTime @search
+}
+# ----- END 0.meta-data.graphql ----- 
+
+# ----- 1.auth/0.auth.graphql ----- 
+# USER AUTHENTICATION
+# values in camelcase are due to @auth/core adapter type definition
+
+type Account {
+  id: ID
+
+  type: String
+  provider: String @search(by: [hash])
+  providerAccountId: String @search(by: [hash])
+  refreshToken: String
+  expires_at: Int64
+  accessToken: String
+  token_type: String
+  refresh_token: String
+  access_token: String
+  scope: String
+  id_token: String
+  session_state: String
+  user: User @hasInverse(field: "accounts")
+}
+
+type Session {
+  id: ID
+
+  expires: DateTime
+  sessionToken: String @search(by: [hash])
+  user: User @hasInverse(field: "sessions")
+}
+
+type User {
+  id: ID
+
+  name: String
+  email: String @id
+  emailVerified: DateTime
+  image: String
+  accounts: [Account] @hasInverse(field: "user")
+  sessions: [Session] @hasInverse(field: "user")
+  citizen_profile: _Citizen_Profile_ @hasInverse(field: "user")
+}
+
+type VerificationToken {
+  id: ID
+
+  identifier: String @search(by: [hash])
+  token: String @search(by: [hash])
+  expires: DateTime
+}
+
+
+# ----- END 1.auth/0.auth.graphql ----- 
+
+# ----- 1.auth/1.citizen.graphql ----- 
+type _Citizen_Profile_ {
+  id: ID
+
+  user: User @hasInverse(field: "citizen_profile")
+
+  # for now country defaults to India
+  # country: [_Country_]
+
+  # what should the user follow? region version or entity?
+  # I think root entity it holds the identity of the region for the given time and connects to everything else.
+  state_or_union_territories: [_Indian_State_Union_Territory_] @hasInverse(field: "citizen_followers")
+  districts: [_Indian_District_] @hasInverse(field: "citizen_followers")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_] @hasInverse(field: "citizen_followers")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_] @hasInverse(field: "citizen_followers")
+
+  # policy subjects
+  policy_domains: [_Public_Policy_Domain_] @hasInverse(field: "citizen_followers")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 1.auth/1.citizen.graphql ----- 
+
+# ----- 2.language.graphql ----- 
+# language and scripts
+# text, especially names can be in multiple languages and scripts
+type _Language_ {
+  id: ID!
+
+  name_en: String! @id
+  names: [_Name_] @hasInverse(field: "language")
+  scripts: [_Script_] @hasInverse(field: "languages")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Script_ {
+  id: ID!
+
+  name_en: String! @id
+  names: [_Name_] @hasInverse(field: "script")
+  languages: [_Language_] @hasInverse(field: "scripts")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# instance of language + script combination.
+type _Language_Script_ {
+  id: ID!
+
+  name_en: String! @id
+  language: _Language_!
+  script: _Script_!
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 2.language.graphql ----- 
+
+# ----- 3.name.graphql ----- 
+# the "WHO" of 5W1H #ENTRY_NODE
+# #ENTRY_NODE
+# name of all entities in the knowledge graph.
+# an entry point for all.
+# one name can be shared by multiple entities.
+type _Name_ {
+  id: ID!
+
+  name: String! @id @search(by: [hash, term, fulltext])
+
+  # a set of characters can be same for different combinations of languages and scripts
+  language_script: [_Language_Script_]
+  case_sensitive: Boolean
+
+  # NAMES OF Languages and Scripts
+  language: [_Language_] @hasInverse(field: "names")
+  script: [_Script_] @hasInverse(field: "names")
+
+  person: [_Person_] @hasInverse(field: "names")
+
+  # NAMES OF public policy domains like defence, healthcare etc.
+  public_policy_domain: [_Public_Policy_Domain_] @hasInverse(field: "names")
+  public_policy_domain_group: [_Public_Policy_Domain_Group_] @hasInverse(field: "names")
+
+  # NAMES OF Countries
+  country: [_Country_] @hasInverse(field: "names")
+  # in_zonal_council: [_IN_Zonal_Council_]
+
+  map_data_source_name: [_Source_] @hasInverse(field: "names")
+
+  country_event: [_Country_Event_] @hasInverse(field: "names")
+  country_government: [_Country_Government_] @hasInverse(field: "names")
+
+  government_system_type_economic_system: [_Government_System_Types_Economic_System_] @hasInverse(field: "names")
+  government_system_type_religion: [_Government_System_Types_Religion_] @hasInverse(field: "names")
+  government_system_type_head_of_state_or_government: [_Government_System_Types_Head_Of_State_Or_Government]
+    @hasInverse(field: "names")
+  government_system_type_partisan_systems: [_Government_System_Types_Partisan_Systems_] @hasInverse(field: "names")
+  government_system_type_democracy: [_Government_System_Types_Democracy_] @hasInverse(field: "names")
+  government_system_type_oligarchy: [_Government_System_Types_Oligarchy_] @hasInverse(field: "names")
+  government_system_type_autocratic: [_Government_System_Types_Autocratic_] @hasInverse(field: "names")
+  government_system_type_monarchy: [_Government_System_Types_Monarchy_] @hasInverse(field: "names")
+  government_system_type_authority_distribution: [_Government_System_Types_Authority_Distribution_]
+    @hasInverse(field: "names")
+  government_system_type_authority_concentration: [_Government_System_Types_Authority_Concentration_]
+    @hasInverse(field: "names")
+  government_system_type_authority_source: [_Government_System_Types_Authority_Source_] @hasInverse(field: "names")
+  government_system_type_authority_status: [_Government_System_Types_Authority_Status_] @hasInverse(field: "names")
+
+  indian_union_government_department: [_Indian_Union_Government_Department_] @hasInverse(field: "names")
+  indian_union_government_ministry: [_Indian_Union_Government_Ministry_] @hasInverse(field: "names")
+  indian_government_official_role: [_Indian_Government_Official_Role_] @hasInverse(field: "names")
+
+  indian_union_parliament_loksabha: [_Indian_Loksabha_] @hasInverse(field: "names")
+
+  indian_loksabha_constituency: [_Indian_Loksabha_Constituency_] @hasInverse(field: "names")
+  indian_loksabha_constituency_reorganisation: [_Indian_Loksabha_Constituency_Reorganisation_]
+    @hasInverse(field: "names")
+  indian_loksabha_election: [_Indian_Loksabha_Election_] @hasInverse(field: "names")
+
+  indian_vidhansabha_constituency: [_Indian_Vidhansabha_Constituency_] @hasInverse(field: "names")
+  indian_vidhansabha_constituency_reorganisation: [_Indian_Vidhansabha_Constituency_Reorganisation_]
+    @hasInverse(field: "names")
+
+  indian_state_union_territory: [_Indian_State_Union_Territory_] @hasInverse(field: "names")
+  indian_state_union_territory_reorganisation: [_Indian_State_Union_Territory_Reorganisation_]
+    @hasInverse(field: "names")
+
+  indian_district: [_Indian_District_] @hasInverse(field: "names")
+  indian_district_reorganisation: [_Indian_District_Reorganisation_] @hasInverse(field: "names")
+
+  indian_sub_district: [_Indian_Sub_District_] @hasInverse(field: "names")
+  indian_sub_district_reorganisation: [_Indian_Sub_District_Reorganisation_] @hasInverse(field: "names")
+
+  indian_political_party: [_Indian_Political_Party_] @hasInverse(field: "names")
+
+  indian_legal_document: [_Indian_Legal_Document_] @hasInverse(field: "names")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 3.name.graphql ----- 
+
+# ----- 4.person.graphql ----- 
+type _Person_ {
+  id: ID!
+
+  names: [_Name_] @hasInverse(field: "person")
+
+  born: _Date_Time_
+  died: _Date_Time_
+
+  # Should not be separate wikipedia node.
+  # 1:1 relationship. Will be another high fanout node.
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  indian_politician: _Indian_Politician_ @hasInverse(field: "person")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# SINGLE_NODE_TYPE
+type _Indian_Politician_ {
+  id: ID!
+
+  # names: [_Name_!]! @hasInverse(field: "indian_politician")
+
+  political_party_memberships: [_Indian_Political_Party_Member_] @hasInverse(field: "politician")
+
+  person: _Person_ @hasInverse(field: "indian_politician")
+
+  # elections in which participated
+  loksabha_elections_contested: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "candidate")
+
+  # official positions held
+  loksabha_member: [_Indian_Loksabha_Member_] @hasInverse(field: "position_held_by")
+  # rajyasabha_member: [_Indian_Rajyasabha_Member_]
+  # vidhansabha_member: [_Indian_Vidhansabha_Member_]
+  prime_minister: [_Indian_Prime_Minister_] @hasInverse(field: "position_held_by")
+  cabinet_minister: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "position_held_by")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "position_held_by")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "position_held_by")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 4.person.graphql ----- 
+
+# ----- 5.sources.graphql ----- 
+# describe source
+type _Source_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # about source
+  names: [_Name_] @hasInverse(field: "map_data_source_name")
+  source_description: String
+
+  # link to source
+  source_urls: [String]
+
+  source_data: [_Source_Data_] @hasInverse(field: "source")
+}
+
+type _Source_Data_ {
+  id: ID!
+
+  source: _Source_ @hasInverse(field: "source_data")
+
+  # urls specific to the data
+  source_url: [String]
+  # original stringified data for this instance
+  source_data: String
+
+  geo: [_Geo_] @hasInverse(field: "source")
+}
+
+# ----- END 5.sources.graphql ----- 
+
+# ----- 6.geo.graphql ----- 
+enum _Location_Or_Region_Category_ {
+  Location
+  Region
+}
+
+enum _Geo_Precision_ {
+  # e.g. countries in world map on low res map image
+  Extra_Low
+  Low
+  Medium
+  High
+  Very_High
+  Near_Real_World
+}
+
+# the "WHERE" of 5W1H
+# #ENTRY_NODE
+# tile by tile geo information and how its related to political regions
+type _Geo_ {
+  id: ID!
+  # CHANGE: not to include category, if has location,
+  category: _Location_Or_Region_Category_ @search(by: [exact])
+
+  source: _Source_Data_ @hasInverse(field: "geo")
+
+  # if the category is location
+  location: Point @search
+
+  # if the category is region
+  area: MultiPolygon @search
+
+  # how close to real the map data is. kind of like confidence score
+  precision: Int @search
+
+  country_boundary_actual: _Country_Region_ @hasInverse(field: "geo_boundary_self_actual")
+  country_boundary_self_official: _Country_Region_ @hasInverse(field: "geo_boundary_self_official")
+  country_boundary_world_official: _Country_Region_ @hasInverse(field: "geo_boundary_world_official")
+
+  india_zonal_council_divisions: _Country_Region_ @hasInverse(field: "geo_country_divisions_zonal_council")
+  india_state_union_territory_divisions: _Country_Region_
+    @hasInverse(field: "geo_country_divisions_state_union_territory")
+  india_district_divisions: _Country_Region_ @hasInverse(field: "geo_country_divisions_district")
+  india_vidhansabha_constituency_divisions: _Country_Region_
+    @hasInverse(field: "geo_country_divisions_loksabha_constituency")
+  india_loksabha_constituency_divisions: _Country_Region_
+    @hasInverse(field: "geo_country_divisions_vidhansabha_constituency")
+
+  indian_states_union_territory_boundary: _Indian_State_Union_Territory_Version_Region_
+    @hasInverse(field: "geo_boundary")
+  indian_district_boundary: _Indian_District_Version_Region_ @hasInverse(field: "geo_boundary")
+  indian_sub_district_boundary: _Indian_Sub_District_Version_Region_ @hasInverse(field: "geo_boundary")
+
+  indian_loksabha_constituency_boundary: _Indian_Loksabha_Constituency_Version_Region_
+    @hasInverse(field: "geo_boundary")
+  indian_vidhansabha_constituency_boundary: _Indian_Vidhansabha_Constituency_Version_Region_
+    @hasInverse(field: "geo_boundary")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 6.geo.graphql ----- 
+
+# ----- 7.date-time.graphql ----- 
+enum Date_Time_Precision_Category {
+  Year
+  Month
+  Day
+  Hour
+  Minute
+  Second
+}
+
+type _Date_Time_ {
+  id: ID!
+
+  date_time_id: String! @id @search(by: [exact, term, fulltext])
+
+  year: Int @search
+  month: Int @search
+  day: Int @search
+  hour: Int @search
+  minute: Int @search
+  second: Int @search
+
+  timezone_independent: Boolean @search
+  timezone: String @search
+
+  date_time_precision: Date_Time_Precision_Category @search(by: [exact])
+
+  from_datetime_country_event: [_Country_Event_] @hasInverse(field: "datetime_from")
+  to_datetime_country_event: [_Country_Event_] @hasInverse(field: "datetime_to")
+
+  indian_state_union_territory_established_on: [_Indian_State_Union_Territory_] @hasInverse(field: "established_on")
+  indian_state_union_territory_disestablished_on: [_Indian_State_Union_Territory_]
+    @hasInverse(field: "disestablished_on")
+
+  indian_district_reorganisation: [_Indian_District_Reorganisation_] @hasInverse(field: "reorganised_on")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# ----- END 7.date-time.graphql ----- 
+
+# ----- 8.country.graphql ----- 
+# the "WHAT" of 5W1H.
+# will have to have multiple node types for the events.
+#
+type _Country_Event_ {
+  id: ID!
+
+  # if involves multiple countrys
+  country: [_Country_] @hasInverse(field: "events")
+
+  # specific to this event. should be able to identify the event and country.
+  # would be best if the value can be unique, though not setting that as a condition as of now.
+  names: [_Name_] @hasInverse(field: "country_event")
+  description: String! @search(by: [exact, fulltext, term])
+
+  # broad categories. "term criteria": can be applicable to any country.
+  # "Declared Independence", "Civil War", "Independence Day", "Declared as Republic", "Declared War", "Hoasted Olympic", "Launched a Sattelite"
+  # cannot be an enum (at least at this point) since can have too many values,
+  # unless we reach a point where we have a sure number which may not change much.
+  event_type: String! @search(by: [exact, fulltext, term])
+
+  # time range event or one time
+  one_time_event: Boolean
+
+  datetime_from: _Date_Time_! @hasInverse(field: "from_datetime_country_event")
+  datetime_to: _Date_Time_ @hasInverse(field: "to_datetime_country_event")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Country_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_!]! @hasInverse(field: "country")
+
+  regions: [_Country_Region_] @hasInverse(field: "country")
+
+  government: _Country_Government_ @hasInverse(field: "governs_country")
+
+  events: [_Country_Event_] @hasInverse(field: "country")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# political regions associated with and within a country
+type _Country_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  country: _Country_ @hasInverse(field: "regions")
+
+  # date on which the region changed
+  # e.g. sikkim added to India
+  # version: DateTime @search
+
+  established: _Country_Event_
+  disestablished: _Country_Event_
+
+  # how the country region related to other region types
+  # capital: [_Countryal_Capital_City_]
+  # zonal_council: [_IN_Zonal_Council_Region_] @hasInverse(field: "country")
+  # state: [_IN_State_Region_] @hasInverse(field: "country")
+  # union_territory: [_IN_Union_Territory_Region_] @hasInverse(field: "country")
+
+  # array because, there can be multiple version with varying precision.
+  # low precision for maps, high precicion for search and computation
+  geo_boundary_self_actual: [_Geo_] @hasInverse(field: "country_boundary_actual")
+
+  # boundaries recognized by the national authorities
+  # e.g. PoK is part of India as per Indian government, although its not under GOI administration
+  geo_boundary_self_official: [_Geo_] @hasInverse(field: "country_boundary_self_official")
+  # a country may accept or reject borders of certain countries based on its foriegn policy
+  # this is the world map as per the country
+  geo_boundary_world_official: [_Geo_] @hasInverse(field: "country_boundary_world_official")
+
+  geo_country_divisions_zonal_council: [_Geo_] @hasInverse(field: "india_zonal_council_divisions")
+  geo_country_divisions_state_union_territory: [_Geo_] @hasInverse(field: "india_state_union_territory_divisions")
+  geo_country_divisions_district: [_Geo_] @hasInverse(field: "india_district_divisions")
+  geo_country_divisions_loksabha_constituency: [_Geo_] @hasInverse(field: "india_vidhansabha_constituency_divisions")
+  geo_country_divisions_vidhansabha_constituency: [_Geo_] @hasInverse(field: "india_loksabha_constituency_divisions")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Country_Government_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # Government of India, भारत सरकार
+  names: [_Name_!]! @hasInverse(field: "country_government")
+
+  governs_country: _Country_ @hasInverse(field: "government")
+
+  # official declaration of government system
+  active_government_system_type_official: _Government_System_Type_ @hasInverse(field: "active_official_system_type_of")
+
+  # world country governments
+  # to add country specific data to each one
+  # one country can have had variety of government systems in the past
+  # individual type can help adapt to the country specific needs
+  # e.g. India had in the past, a dominion government, provisional government, british-colony government, east indian company government
+  india_government_system_active: _Indian_Government_System_ @hasInverse(field: "country")
+  # india_government_system_active: [_Indian_Government_System_] @hasInverse(field: "country")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 8.country.graphql ----- 
+
+# ----- 9.government-system-types.graphql ----- 
+type _Government_System_Type_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  description: String
+  # if official system definition
+  active_official_system_type_of: _Country_Government_ @hasInverse(field: "active_government_system_type_official")
+
+  # what is the current status of the authority
+  authority_status_type: [_Government_System_Types_Authority_Status_] @hasInverse(field: "government_system_type")
+
+  # where does the authority reside? monarchy - in the family or individual, republic - in the people
+  authority_source_type: [_Government_System_Types_Authority_Source_]! @hasInverse(field: "government_system_type")
+
+  # where is authority concentrated?
+  authority_concentration_type: [_Government_System_Types_Authority_Concentration_!]!
+    @hasInverse(field: "government_system_type")
+
+  # how is authority distributed?
+  authority_distribution_type: _Government_System_Types_Authority_Distribution_!
+    @hasInverse(field: "government_system_type")
+
+  # if authority origin is heriditary i.e. monarchy
+  monarchy_type: _Government_System_Types_Monarchy_ @hasInverse(field: "government_system_type")
+
+  # if authority concentrated as autocracy
+  autocratic_type: _Government_System_Types_Autocratic_ @hasInverse(field: "government_system_type")
+
+  # if authority concentrated as oligarchy
+  oligarchy_type: _Government_System_Types_Oligarchy_ @hasInverse(field: "government_system_type")
+
+  # If authority is concentrated in elected representatives
+  democracy_type: [_Government_System_Types_Democracy_] @hasInverse(field: "government_system_type")
+
+  # if democracy, how many parties are capable of authority
+  partisan_system_type: _Government_System_Types_Partisan_Systems_ @hasInverse(field: "government_system_type")
+
+  # system of selecting head of the state
+  head_of_state_or_government_system_type: _Government_System_Types_Head_Of_State_Or_Government!
+    @hasInverse(field: "government_system_type")
+
+  # how is the state related to religion
+  religious_ideology_type: _Government_System_Types_Religion_! @hasInverse(field: "government_system_type")
+
+  # how does the state control the resources flow
+  economic_system_type: [_Government_System_Types_Economic_System_!]! @hasInverse(field: "government_system_type")
+
+  established: _Country_Event_
+  disestablished: _Country_Event_
+
+  # #TODO
+  # unicarmel/bicarmel - enum
+
+  # change_type: Major | Minor | Patch
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# WHY HAVE MULTIPLE TYPES?
+# we followed the flow of authority model
+# where authority originates from a point and then on & on is eventually executed/evaluated/feedback
+# there is a structure to it.
+# there are some standard types for each step. e.g. authority_status can be stable, provisional, in-exile, emergency-powers-enabled
+# these are standard values, there can be some custom vale for authority_status
+# like externally-defended-internal-civil-unrest, where there is internal instability, but no external actors can intervene
+# or like war-torn e.g. ukraine, where the government system is intact, but there are regions where government is not working.
+type _Government_System_Types_Authority_Status_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_authority_status")
+  description: String!
+
+  governance_status: String!
+  control_and_authority: String!
+  objective_and_focus: String!
+  international_recognition: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "authority_status_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Authority_Source_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_authority_source")
+  description: String!
+
+  source_of_legitimacy: String!
+  power_structure: String!
+  governance_mechanisms: String!
+  role_of_leadership: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "authority_source_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Authority_Concentration_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_authority_concentration")
+  description: String!
+
+  authority_held_by: String!
+  accountability_towards_people: String!
+  power_hierarchy: [String!]
+  public_access_to_means_of_peaceful_power_transfer: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "authority_concentration_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Authority_Distribution_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_authority_distribution")
+  description: String!
+
+  state_sovereignty: String!
+  power_distribution: String!
+  law_uniformity: String!
+  central_authority_role: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "authority_distribution_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Monarchy_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_monarchy")
+  description: String!
+
+  authority_level: String!
+  constitutional_limitations: String!
+  governing_powers_in: String!
+  power_source: String!
+  reign_term: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "monarchy_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Autocratic_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_autocratic")
+  description: String!
+
+  leadership_origin: String!
+  power_consolidation: String!
+  formation_context: String!
+  governance_style: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "autocratic_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Oligarchy_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_oligarchy")
+  description: String!
+
+  power_basis: String!
+  selection_mechanism: String!
+  governance_focus: String!
+  stability_and_order: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "oligarchy_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Democracy_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_democracy")
+  description: String!
+
+  selection_method: String!
+  governance_focus: String!
+  participation_level: String!
+  system_stability: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "democracy_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Partisan_Systems_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_partisan_systems")
+  description: String!
+
+  party_influence: String!
+  government_formation: String!
+  political_stability: String!
+  representation: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "partisan_system_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Head_Of_State_Or_Government {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_head_of_state_or_government")
+  description: String!
+
+  leadership_structure: String!
+  power_distribution: String!
+  authority_scope: String!
+  government_integration: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "head_of_state_or_government_system_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Religion_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_religion")
+  description: String!
+
+  religious_influence: String!
+  religious_freedom: String!
+  state_support: String!
+  legal_framework: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "religious_ideology_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Government_System_Types_Economic_System_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "government_system_type_economic_system")
+  description: String!
+
+  ownership_and_control: String!
+  societal_structure: String!
+  economic_drivers: String!
+  governance_approach: String!
+
+  government_system_type: [_Government_System_Type_] @hasInverse(field: "economic_system_type")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 9.government-system-types.graphql ----- 
+
+# ----- 10.public-policy-domains.graphql ----- 
+type _Public_Policy_Domain_Group_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [hash, term])
+
+  names: [_Name_] @hasInverse(field: "public_policy_domain_group")
+  description: String
+
+  domains_in_group: [_Public_Policy_Domain_] @hasInverse(field: "public_policy_domain_group")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Public_Policy_Domain_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [hash, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "public_policy_domain")
+  description: String
+
+  public_policy_domain_group: _Public_Policy_Domain_Group_ @hasInverse(field: "domains_in_group")
+
+  super_domain: [_Public_Policy_Domain_] @hasInverse(field: "sub_domain")
+  sub_domain: [_Public_Policy_Domain_] @hasInverse(field: "super_domain")
+
+  government_ministries_departments: _Public_Policy_Domain_Government_Ministries_Departments_
+    @hasInverse(field: "public_policy_domain")
+
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "policy_domains")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# LISTING_NODE. connects all national and state ministries/departments in domains.
+type _Public_Policy_Domain_Government_Ministries_Departments_ {
+  id: ID!
+
+  public_policy_domain: [_Public_Policy_Domain_] @hasInverse(field: "government_ministries_departments")
+
+  indian_union_government_ministries: [_Indian_Union_Government_Ministry_]
+    @hasInverse(field: "policy_domain_ministries_list")
+  indian_union_government_departments: [_Indian_Union_Government_Department_]
+    @hasInverse(field: "policy_domain_departments_list")
+  # indian_state_government: [_Indian_Union_Government_Ministry_]
+  # indian_union_territory_government: [_Indian_Union_Government_Ministry_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 10.public-policy-domains.graphql ----- 
+
+# ----- 11.legal-document.graphql ----- 
+enum _Indian_Legal_Document_Category_ {
+  Constitution
+  Bill
+  Act
+  Notification
+  Rules
+  Regulation
+  Order
+}
+
+type _Indian_Legal_Document_ {
+  id: ID!
+
+  # english title that can be searched
+  name_id: String! @id @search(by: [hash, term, fulltext])
+
+  # title in multiple languages
+  names: [_Name_!]! @hasInverse(field: "indian_legal_document")
+
+  description: String
+  document_type: _Indian_Legal_Document_Category_! @search(by: [exact])
+
+  # is_notified: Boolean!
+
+  # active_version: _Indian_Legal_Document_Version_
+  # versions: [_Indian_Legal_Document_Version_]
+
+  # structural_elements: [_Indian_Legal_Document_Structural_Element_]
+  # amendments: [_Indian_Legal_Document_Amendment_]
+
+  # enactment_date: DateTime @search
+  # enforcement_date: DateTime @search
+
+  # ministry
+  # department
+
+  # state
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 11.legal-document.graphql ----- 
+
+# ----- 12.india/0.indian-government.graphql ----- 
+# SINGLE_NODE_TYPE
+# one node that fans out to multiple nodes
+# links to all nodes related to indian governments and its parts
+# for now add everyone's latest version only or minimal text
+type _Indian_Government_System_ {
+  id: ID!
+
+  country: _Country_Government_ @hasInverse(field: "india_government_system_active")
+
+  # only meta data for now
+  # TODO constitution should be a separate type
+  # constitution: _Indian_Legal_Document_
+
+  # all governments here
+  union_governments: [_Indian_Union_Government_]
+
+  ####################
+  # UNION GOVERNMENT #
+  ####################
+
+  ### EXECUTIVE ###
+
+  # head of union government
+  prime_ministers: [_Indian_Prime_Minister_]
+  # union government ministries
+  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_]
+  # ministries and departments
+  # union_government_ministries_departments: [_Indian_Ministry_Department_]
+
+  ### LEGISLATIVE ###
+
+  # union government legislative
+  loksabha: [_Indian_Loksabha_]
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_]
+
+  # administrative_divisions
+  administrative_divisions: _Indian_Administrative_Divisions
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+enum _Government_Branches_ {
+  Legislative
+  Executive
+  Judiciary
+}
+
+# DOUBTFUL
+# across all branches i.e. legislative, executive, judiciary
+# across all government levels i.e. Union, State, Municipality
+type _Indian_Government_Official_Role_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_government_official_role")
+  description: String
+
+  # link to the role_based_types nodes
+  loksabha_members: [_Indian_Loksabha_Member_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# 1. whenever the PM changes;
+# 2. whenever loksabha changes
+type _Indian_Union_Government_ {
+  id: ID!
+
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "government")
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "government")
+  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "government")
+  # TODO should have active members. we may need versions for cabinet_ministers
+  # cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "government")
+
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "union_government")
+  # rajyasabha: versions of rajyasabha active during the government was in authority
+
+  # TODO bill may need a separate type. when presented, when passed,
+  # revisions and other different steps in the process
+  # bills: [_Indian_Legal_Document_]
+  # acts: [_Indian_Legal_Document_]
+
+  ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "union_government")
+  departments: [_Indian_Union_Government_Department_] @hasInverse(field: "union_government")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# whenever the Prime Minister changes
+# whenever the loksabha changes
+type _Indian_Prime_Minister_ {
+  id: ID!
+
+  position_held_by: _Indian_Politician_ @hasInverse(field: "prime_minister")
+
+  # during tenure
+  government: [_Indian_Union_Government_] @hasInverse(field: "prime_minister")
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "prime_minister")
+  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "prime_minister")
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "prime_minister")
+
+  ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "prime_minister")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Union_Council_Of_Ministers_ {
+  id: ID!
+
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "council_of_ministers")
+
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "council_of_ministers")
+  government: _Indian_Union_Government_ @hasInverse(field: "council_of_ministers")
+
+  council_member_ministers: _Indian_Union_Government_Cabinet_Minister_ @hasInverse(field: "council_of_ministers")
+
+  # TODO there has to be a way where all these values of date time are controlled from one node
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CAN_BE_VERSIONS?
+# CREATE_NEW:
+# whenever any change made to the cabinet. even a single change.
+type _Indian_Union_Government_Cabinet_ {
+  id: ID!
+
+  government: _Indian_Union_Government_ @hasInverse(field: "cabinet")
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "cabinet")
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "cabinet")
+
+  # FIXME
+  # do we need ministries?
+  # FOR: links ministers, minister of states, independent charge ministers by ministry; only links, no redundant info;
+  # AGAINST: breaks hierarchy;
+  ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "cabinet")
+
+  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "cabinet")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "cabinet")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "cabinet")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# whenever any new minister-ministry combination is added
+type _Indian_Union_Government_Cabinet_Minister_ {
+  id: ID!
+
+  # FIXME: See if we need redundant linking
+  # loksabha: _Indian_Loksabha_
+  # prime_minister: _Indian_Prime_Minister_
+  # government: _Indian_Union_Government_
+
+  position_held_by: _Indian_Politician_ @hasInverse(field: "cabinet_minister")
+  ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister")
+
+  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "council_member_ministers")
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "cabinet_ministers")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# whenever any new minister-ministry combination is added
+type _Indian_Union_Government_Minister_Of_State_Independent_Charge_ {
+  id: ID!
+
+  # loksabha: _Indian_Loksabha_
+  # prime_minister: _Indian_Prime_Minister_
+  # government: _Indian_Union_Government_
+
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state_independent_charge")
+
+  ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister_of_state_independent_charge")
+  position_held_by: _Indian_Politician_ @hasInverse(field: "minister_of_state_independent_charge")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# whenever any new minister-ministry combination is added
+type _Indian_Union_Government_Minister_Of_State_ {
+  id: ID!
+
+  # loksabha: _Indian_Loksabha_
+  # prime_minister: _Indian_Prime_Minister_
+  # government: _Indian_Union_Government_
+
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state")
+
+  ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister_of_state")
+  position_held_by: _Indian_Politician_ @hasInverse(field: "minister_of_state")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# 1. when new government is elected
+# 2. when new PM is added to existing loksabha
+# 3. minister is changed?
+# links to all departments in a certain government
+# #YET_TO_FIGURE_OUT may need dated versions? to create the timelines.
+
+type _Indian_Union_Government_Ministry_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "indian_union_government_ministry")
+
+  # broad categories for public policy.  *:* relation with ministries
+  # e.g. health, fisheries, agriculture, road infrastructure
+  policy_domains: [_Public_Policy_Domain_]
+
+  # objective is self updated listing that connects to all ministries in the domain
+  policy_domain_ministries_list: [_Public_Policy_Domain_Government_Ministries_Departments_]
+    @hasInverse(field: "indian_union_government_ministries")
+
+  union_government: _Indian_Union_Government_ @hasInverse(field: "ministries")
+
+  minister: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "ministry")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "ministry")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "ministry")
+
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "ministries")
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "ministries")
+
+  departments: [_Indian_Union_Government_Department_] @hasInverse(field: "ministry")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# subordinate to ministries.
+# corresponds to the executive part that is not directly controlled by the elected representatives
+# can have versions. for now just list the latest ones.
+type _Indian_Union_Government_Department_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "indian_union_government_department")
+
+  # broad categories for public policy.  *:* relation with ministries
+  # e.g. health, fisheries, agriculture, road infrastructure
+  policy_domains: [_Public_Policy_Domain_]
+
+  # objective is self updated listing that connects to all ministries in the domain
+  policy_domain_departments_list: [_Public_Policy_Domain_Government_Ministries_Departments_]
+    @hasInverse(field: "indian_union_government_departments")
+
+  union_government: _Indian_Union_Government_ @hasInverse(field: "departments")
+  ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "departments")
+
+  parent_department: [_Indian_Union_Government_Department_] @hasInverse(field: "child_departments")
+  child_departments: [_Indian_Union_Government_Department_] @hasInverse(field: "parent_department")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/0.indian-government.graphql ----- 
+
+# ----- 12.india/1.parliament.graphql ----- 
+# CREATE_NEW: whenever new loksabha is elected
+# may also have versions to cover by-elections
+type _Indian_Loksabha_ {
+  id: ID!
+
+  names: [_Name_] @hasInverse(field: "indian_union_parliament_loksabha")
+
+  loksabha_number: Int!
+
+  # elections and by-elections
+  elections: [_Indian_Loksabha_Election_] @hasInverse(field: "loksabha")
+
+  members: [_Indian_Loksabha_Member_] @hasInverse(field: "loksabha")
+  constituencies: [_Indian_Loksabha_Constituency_] @hasInverse(field: "loksabhas")
+
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "loksabha")
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "loksabha")
+  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "loksabha")
+  union_government: _Indian_Union_Government_ @hasInverse(field: "loksabha")
+
+  # sessions
+  # list debates and QnA
+  loksabha_sessions: [_Indian_Loksabha_Session_] @hasInverse(field: "loksabha")
+
+  term_start: _Date_Time_
+  term_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# for every new session
+type _Indian_Loksabha_Session_ {
+  id: ID!
+
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "loksabha_sessions")
+
+  # list all the debates, qnas
+  # questions_answers: []
+  # debates: []
+  # bills: []
+  # acts: []
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW
+# when someone wins an election
+type _Indian_Loksabha_Member_ {
+  id: ID!
+
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "members")
+  constituency_election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "winner")
+
+  constituency: _Indian_Loksabha_Constituency_ @hasInverse(field: "loksabha_members")
+  election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "election_winner")
+
+  position_held_by: _Indian_Politician_ @hasInverse(field: "loksabha_member")
+  election_winning_political_party: _Indian_Political_Party_Loksabha_Election_ @hasInverse(field: "loksabha_members")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/1.parliament.graphql ----- 
+
+# ----- 12.india/2.elections/0.elections.graphql ----- 
+# CREATE_NEW
+# every general election
+# every loksabha by-election
+type _Indian_Loksabha_Election_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_loksabha_election")
+
+  # for which loksabha
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "elections")
+
+  # how many phases
+  phases: [_Indian_Loksabha_Election_Phase_] @hasInverse(field: "election")
+
+  # all the participating constituencies
+  constituency_election: [_Indian_Loksabha_Constituency_Election_] @hasInverse(field: "election")
+
+  participating_political_parties: [_Indian_Political_Party_Loksabha_Election_] @hasInverse(field: "loksabha_election")
+  pre_poll_coalitions: [_Indian_Political_Party_Pre_Poll_Coalition_Loksabha_Election_]
+    @hasInverse(field: "loksabha_election")
+
+  # no updates field. redundancy acceptable
+  started_on: _Date_Time_
+  completed_on: _Date_Time_
+
+  result: _Indian_Loksabha_Election_Result_ @hasInverse(field: "election")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Election_Result_ {
+  id: ID!
+
+  election: _Indian_Loksabha_Election_ @hasInverse(field: "result")
+  constituency_election_result: [_Indian_Loksabha_Constituency_Election_Result_] @hasInverse(field: "election_result")
+
+  result_declaration_date: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# 1. every loksabha election that is completed in multiple phases
+type _Indian_Loksabha_Election_Phase_ {
+  id: ID!
+
+  election: _Indian_Loksabha_Election_ @hasInverse(field: "phases")
+  election_date: _Date_Time_
+
+  constituency_election: [_Indian_Loksabha_Constituency_Election_] @hasInverse(field: "election_phase")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Election_ {
+  id: ID!
+
+  election: _Indian_Loksabha_Election_ @hasInverse(field: "constituency_election")
+  election_phase: _Indian_Loksabha_Election_Phase_ @hasInverse(field: "constituency_election")
+
+  constituency: _Indian_Loksabha_Constituency_ @hasInverse(field: "elections")
+  candidates: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "election")
+  # participating_political_parties: [_Indian_Political_Party_Loksabha_Election_] @hasInverse(field: "constituencies")
+
+  election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "constituency_election")
+  election_winner: _Indian_Loksabha_Member_ @hasInverse(field: "election")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# objective: which politician from which party fought which election and got what results
+type _Indian_Loksabha_Constituency_Election_Candidate_ {
+  id: ID!
+
+  candidate: _Indian_Politician_ @hasInverse(field: "loksabha_elections_contested")
+  political_party: _Indian_Political_Party_Loksabha_Election_ @hasInverse(field: "candidates_constituencies")
+
+  election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "candidates")
+  constituency_election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "candidates")
+  candidate_result: _Indian_Loksabha_Constituency_Election_Result_Candidate_Data_ @hasInverse(field: "candidate")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Election_Result_ {
+  id: ID!
+
+  election_result: _Indian_Loksabha_Election_Result_ @hasInverse(field: "constituency_election_result")
+
+  constituency_election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "election_result")
+
+  total_voters: Int
+  voter_turnout: Int
+  voter_turnout_percentage: Float
+
+  candidates: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "constituency_election_result")
+  candidate_result: [_Indian_Loksabha_Constituency_Election_Result_Candidate_Data_] @hasInverse(field: "overall_result")
+
+  # connect to the loksabha member
+  winner: _Indian_Loksabha_Member_ @hasInverse(field: "constituency_election_result")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Election_Result_Candidate_Data_ {
+  id: ID!
+
+  candidate: _Indian_Loksabha_Constituency_Election_Candidate_ @hasInverse(field: "candidate_result")
+  overall_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "candidate_result")
+
+  votes_count: Int
+  votes_percentage: Float
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/2.elections/0.elections.graphql ----- 
+
+# ----- 12.india/2.elections/1.political-parties.graphql ----- 
+type _Indian_Political_Party_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_!]! @hasInverse(field: "indian_political_party")
+
+  # ideology: [_Political_Ideology_]
+  # political_spectrum_position: [_Political_Spectrum_Position_]
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  is_national_party: Boolean
+
+  # all elections fought by political party,
+  loksabha_elections: [_Indian_Political_Party_Loksabha_Election_] @hasInverse(field: "political_party")
+  # coalitions in those elections
+  # and their results.
+
+  # loksabha_election_candidates: []
+  # loksabha_memberships: [_Indian_Loksabha_Member_] @hasInverse(field: "political_party")
+  members: [_Indian_Political_Party_Member_] @hasInverse(field: "party")
+
+  # political_party_loksabha_election
+  # political party
+  # which election
+  # fielded candidates and constituencies
+  # coalition with political_party_loksabha_election
+  #
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# OBJECTIVES: which party, fought which loksabha election, fought in which constituencies, which loksabha members won from this
+type _Indian_Political_Party_Loksabha_Election_ {
+  id: ID!
+
+  loksabha_election: _Indian_Loksabha_Election_ @hasInverse(field: "participating_political_parties")
+  political_party: _Indian_Political_Party_ @hasInverse(field: "loksabha_elections")
+
+  candidates_constituencies: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "political_party")
+  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "election_winning_political_party")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# OBJECTIVES: which parties made a pre-poll coalition.
+type _Indian_Political_Party_Pre_Poll_Coalition_Loksabha_Election_ {
+  id: ID!
+
+  loksabha_election: _Indian_Loksabha_Election_ @hasInverse(field: "pre_poll_coalitions")
+  political_parties: [_Indian_Political_Party_Loksabha_Election_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# which politician was part of which party and from when to when
+# all politicians who are or have been menber
+type _Indian_Political_Party_Member_ {
+  id: ID!
+
+  politician: _Indian_Politician_ @hasInverse(field: "political_party_memberships")
+  party: _Indian_Political_Party_ @hasInverse(field: "members")
+
+  member_from: _Date_Time_
+  member_to: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/2.elections/1.political-parties.graphql ----- 
+
+# ----- 12.india/3.regions/0.meta-data.graphql ----- 
+# SINGLE_NODE_TYPE
+# DIRECTORY_NODE_TYPE
+# one node for India
+# has multiple versions for different state of administrative structures at different times
+type _Indian_Administrative_Divisions {
+  id: ID!
+
+  states_union_territories: [_Indian_State_Union_Territory_]
+  districts: [_Indian_District_]
+}
+
+# SINGLE_NODE_TYPE
+# DIRECTORY_NODE_TYPE
+# one node for India
+# has multiple versions for different state of legislative structures at different times
+type _Indian_Legislative_Divisions {
+  id: ID!
+
+  # states_union_territories: [_Indian_State_Union_Territory_]
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_]
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_]
+}
+
+# # district courts? location of courts
+# type _Indian_Judicial_Divisions {
+#   id: ID!
+# }
+
+enum _Indian_State_Or_Union_Territory_Category_ {
+  State
+  Union_Territory
+}
+
+enum _Indian_Division_Version_Change_ {
+  Formation
+  Reorganisation
+}
+
+enum _Indian_Legislative_Constituency_Reservation_ {
+  SC
+  ST
+  NONE
+  SANGHA
+  BL
+}
+
+
+# ----- END 12.india/3.regions/0.meta-data.graphql ----- 
+
+# ----- 12.india/3.regions/1.state-union-territory.graphql ----- 
+
+# DIRECTORY_NODE_TYPE
+# One node for every state or union territory
+# has multiple versions for different state of administrative structures at different times
+type _Indian_State_Union_Territory_ {
+  # districts blocks, tehsil etc.
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_state_union_territory")
+
+  state_or_union_territory: _Indian_State_Or_Union_Territory_Category_ @search(by: [hash])
+
+  regions: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "self")
+  versions: [_Indian_State_Union_Territory_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_State_Union_Territory_Reorganisation_] @hasInverse(field: "states_union_territories")
+
+  active_version: _Indian_State_Union_Territory_Version_
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  vehicle_code: String @search(by: [hash])
+  iso_code: String @search(by: [hash])
+
+  established_on: _Date_Time_ @hasInverse(field: "indian_state_union_territory_established_on")
+  disestablished_on: _Date_Time_ @hasInverse(field: "indian_state_union_territory_disestablished_on")
+
+  # TODO
+  # officials, events
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "state_or_union_territories")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_State_Union_Territory_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_state_union_territory_reorganisation")
+
+  # affected state_or_union_territory
+  states_union_territories: [_Indian_State_Union_Territory_] @hasInverse(field: "reorganisations")
+  # new versions of state_or_union_territory
+  state_or_union_territory_versions: [_Indian_State_Union_Territory_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_State_Union_Territory_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact]) # unique id for each all_district version
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  states_union_territories: [_Indian_State_Union_Territory_Version_]
+
+  # Metadata about all reorganisations that caused present state
+  # reorganisations: [_Indian_State_Union_Territory_Reorganisation_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_State_Union_Territory_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_State_Union_Territory_ @hasInverse(field: "versions")
+  region: _Indian_State_Union_Territory_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_State_Union_Territory_Reorganisation_ @hasInverse(field: "state_or_union_territory_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_State_Union_Territory_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_State_Union_Territory_ @hasInverse(field: "regions")
+  version: _Indian_State_Union_Territory_Version_ @hasInverse(field: "region")
+
+  osm_id: String @search(by: [hash])
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_states_union_territory_boundary")
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_]
+    @hasInverse(field: "states_union_territories")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "states_union_territories")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "states_union_territories")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_]
+    @hasInverse(field: "states_union_territories")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_]
+    @hasInverse(field: "states_union_territories")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/3.regions/1.state-union-territory.graphql ----- 
+
+# ----- 12.india/3.regions/2.district.graphql ----- 
+# DIRECTORY_NODE_TYPE
+# One node for every district
+# has multiple versions for different state of administrative structures at different times
+type _Indian_District_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_district")
+
+  regions: [_Indian_District_Version_Region_] @hasInverse(field: "self")
+
+  versions: [_Indian_District_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_District_Reorganisation_] @hasInverse(field: "districts")
+
+  active_version: _Indian_District_Version_
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "districts")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_District_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_district_reorganisation")
+
+  # TODO should this be bidirectional?
+  # Should all changes made to direct sub-regions be added to parent?
+  state_or_union_territory: _Indian_State_Union_Territory_Version_Region_
+
+  # affected districts
+  districts: [_Indian_District_] @hasInverse(field: "reorganisations")
+  # new versions of districts
+  district_versions: [_Indian_District_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_District_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact]) # unique id for each all_district version
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  districts: [_Indian_District_Version_]
+
+  # Metadata about the reason this node was created
+  # reorganisation: _Indian_District_Reorganisation_
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_District_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_District_ @hasInverse(field: "versions")
+  region: _Indian_District_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_District_Reorganisation_ @hasInverse(field: "district_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# e.g. if a district is divided. the child_district will have both region and self established on as same_date
+# for parent_district, there will be new region with same_date, old parent_district region will have destablished_on as same_date
+type _Indian_District_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_District_ @hasInverse(field: "regions")
+  version: _Indian_District_Version_ @hasInverse(field: "region")
+
+  osm_id: String @search(by: [hash])
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "districts")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "districts")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "districts")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_] @hasInverse(field: "districts")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_] @hasInverse(field: "districts")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_district_boundary")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# ----- END 12.india/3.regions/2.district.graphql ----- 
+
+# ----- 12.india/3.regions/3.loksabha.graphql ----- 
+
+# DIRECTORY_NODE_TYPE
+# One node for every loksabha constituency
+# has multiple versions for different state of administrative structures at different times
+# CREATE_NEW:
+# after creation onf new constituency after delimitation
+type _Indian_Loksabha_Constituency_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_loksabha_constituency")
+
+  # all loksabhas that had a member from this constituency
+  loksabhas: [_Indian_Loksabha_] @hasInverse(field: "constituencies")
+  # all members so far
+  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "constituency")
+  # all elections so far
+  elections: [_Indian_Loksabha_Constituency_Election_] @hasInverse(field: "constituency")
+
+  regions: [_Indian_Loksabha_Constituency_Version_Region_] @hasInverse(field: "self")
+  versions: [_Indian_Loksabha_Constituency_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_Loksabha_Constituency_Reorganisation_] @hasInverse(field: "loksabha_constituencies")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  active_version: _Indian_Loksabha_Constituency_Version_
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "loksabha_constituencies")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_loksabha_constituency_reorganisation")
+
+  # affected loksabha constituencies
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_] @hasInverse(field: "reorganisations")
+  # new versions of loksabha constituencies
+  loksabha_constituency_versions: [_Indian_Loksabha_Constituency_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_Loksabha_Constituency_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact])
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  districts: [_Indian_Loksabha_Constituency_Version_]
+
+  # Metadata about the reason this node was created
+  # reorganisation: _Indian_District_Reorganisation_
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_Loksabha_Constituency_ @hasInverse(field: "versions")
+  region: _Indian_Loksabha_Constituency_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_Loksabha_Constituency_Reorganisation_ @hasInverse(field: "loksabha_constituency_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  constituency_number: String @search(by: [exact, term, fulltext])
+  reservation: _Indian_Legislative_Constituency_Reservation_ @search(by: [exact])
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_Loksabha_Constituency_ @hasInverse(field: "regions")
+
+  version: _Indian_Loksabha_Constituency_Version_ @hasInverse(field: "region")
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_]
+    @hasInverse(field: "loksabha_constituencies")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "loksabha_constituencies")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "loksabha_constituencies")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_] @hasInverse(field: "loksabha_constituencies")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_]
+    @hasInverse(field: "loksabha_constituencies")
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_loksabha_constituency_boundary")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/3.regions/3.loksabha.graphql ----- 
+
+# ----- 12.india/3.regions/4.vidhansabha.graphql ----- 
+# DIRECTORY_NODE_TYPE
+# One node for every vidhansabha constituency
+# has multiple versions for different state of administrative structures at different times
+# CREATE_NEW:
+# after creation of new constituency after delimitation
+type _Indian_Vidhansabha_Constituency_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_vidhansabha_constituency")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  # # all vidhansabhas that had a member from this constituency
+  # vidhansabhas: [_Indian_Vidhansabha_] @hasInverse(field: "constituencies")
+  # # all members so far
+  # vidhansabha_members: [_Indian_Vidhansabha_Member_] @hasInverse(field: "constituency")
+  # # all elections so far
+  # elections: [_Indian_Vidhansabha_Constituency_Election_] @hasInverse(field: "constituency")
+
+  regions: [_Indian_Vidhansabha_Constituency_Version_Region_] @hasInverse(field: "self")
+  versions: [_Indian_Vidhansabha_Constituency_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_Vidhansabha_Constituency_Reorganisation_] @hasInverse(field: "vidhansabha_constituencies")
+
+  active_version: _Indian_Vidhansabha_Constituency_Version_
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "vidhansabha_constituencies")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Vidhansabha_Constituency_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_vidhansabha_constituency_reorganisation")
+
+  # affected vidhansabha constituencies
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_] @hasInverse(field: "reorganisations")
+  # new versions of vidhansabha constituencies
+  vidhansabha_constituency_versions: [_Indian_Vidhansabha_Constituency_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_Vidhansabha_Constituency_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact])
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  districts: [_Indian_Vidhansabha_Constituency_Version_]
+
+  # Metadata about the reason this node was created
+  # reorganisation: _Indian_District_Reorganisation_
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Vidhansabha_Constituency_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_Vidhansabha_Constituency_ @hasInverse(field: "versions")
+  region: _Indian_Vidhansabha_Constituency_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_Vidhansabha_Constituency_Reorganisation_
+    @hasInverse(field: "vidhansabha_constituency_versions")
+
+  constituency_number: String @search(by: [exact, term, fulltext])
+  reservation: _Indian_Legislative_Constituency_Reservation_ @search(by: [exact])
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Vidhansabha_Constituency_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_Vidhansabha_Constituency_ @hasInverse(field: "regions")
+
+  version: _Indian_Vidhansabha_Constituency_Version_ @hasInverse(field: "region")
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_]
+    @hasInverse(field: "vidhansabha_constituencies")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "vidhansabha_constituencies")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "vidhansabha_constituencies")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_]
+    @hasInverse(field: "vidhansabha_constituencies")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_]
+    @hasInverse(field: "vidhansabha_constituencies")
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_vidhansabha_constituency_boundary")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/3.regions/4.vidhansabha.graphql ----- 
+
+# ----- 12.india/3.regions/5.sub-district.graphql ----- 
+type _Indian_Sub_District_ {
+  id: ID
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_sub_district")
+
+  regions: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "self")
+  versions: [_Indian_Sub_District_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_Sub_District_Reorganisation_] @hasInverse(field: "sub_districts")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  active_version: _Indian_Sub_District_Version_
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Sub_District_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_sub_district_reorganisation")
+
+  # affected districts
+  sub_districts: [_Indian_Sub_District_] @hasInverse(field: "reorganisations")
+  # new versions of districts
+  sub_district_versions: [_Indian_Sub_District_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_Sub_District_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact]) # unique id for each all_district version
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all sub_districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  sub_districts: [_Indian_Sub_District_Version_]
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Sub_District_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_Sub_District_ @hasInverse(field: "versions")
+  region: _Indian_Sub_District_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_Sub_District_Reorganisation_ @hasInverse(field: "sub_district_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# e.g. if a district is divided. the child_district will have both region and self established on as same_date
+# for parent_district, there will be new region with same_date, old parent_district region will have destablished_on as same_date
+type _Indian_Sub_District_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_Sub_District_ @hasInverse(field: "regions")
+  version: _Indian_Sub_District_Version_ @hasInverse(field: "region")
+
+  osm_id: String @search(by: [hash])
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "sub_districts")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "sub_districts")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "sub_districts")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_] @hasInverse(field: "sub_districts")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_] @hasInverse(field: "sub_districts")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_sub_district_boundary")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+# ----- END 12.india/3.regions/5.sub-district.graphql ----- 

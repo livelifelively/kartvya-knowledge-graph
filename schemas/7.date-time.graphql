@@ -1,0 +1,38 @@
+enum Date_Time_Precision_Category {
+  Year
+  Month
+  Day
+  Hour
+  Minute
+  Second
+}
+
+type _Date_Time_ {
+  id: ID!
+
+  date_time_id: String! @id @search(by: [exact, term, fulltext])
+
+  year: Int @search
+  month: Int @search
+  day: Int @search
+  hour: Int @search
+  minute: Int @search
+  second: Int @search
+
+  timezone_independent: Boolean @search
+  timezone: String @search
+
+  date_time_precision: Date_Time_Precision_Category @search(by: [exact])
+
+  from_datetime_country_event: [_Country_Event_] @hasInverse(field: "datetime_from")
+  to_datetime_country_event: [_Country_Event_] @hasInverse(field: "datetime_to")
+
+  indian_state_union_territory_established_on: [_Indian_State_Union_Territory_] @hasInverse(field: "established_on")
+  indian_state_union_territory_disestablished_on: [_Indian_State_Union_Territory_]
+    @hasInverse(field: "disestablished_on")
+
+  indian_district_reorganisation: [_Indian_District_Reorganisation_] @hasInverse(field: "reorganised_on")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

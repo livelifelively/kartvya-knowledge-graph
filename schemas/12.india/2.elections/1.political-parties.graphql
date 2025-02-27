@@ -1,0 +1,73 @@
+type _Indian_Political_Party_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_!]! @hasInverse(field: "indian_political_party")
+
+  # ideology: [_Political_Ideology_]
+  # political_spectrum_position: [_Political_Spectrum_Position_]
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  is_national_party: Boolean
+
+  # all elections fought by political party,
+  loksabha_elections: [_Indian_Political_Party_Loksabha_Election_] @hasInverse(field: "political_party")
+  # coalitions in those elections
+  # and their results.
+
+  # loksabha_election_candidates: []
+  # loksabha_memberships: [_Indian_Loksabha_Member_] @hasInverse(field: "political_party")
+  members: [_Indian_Political_Party_Member_] @hasInverse(field: "party")
+
+  # political_party_loksabha_election
+  # political party
+  # which election
+  # fielded candidates and constituencies
+  # coalition with political_party_loksabha_election
+  #
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# OBJECTIVES: which party, fought which loksabha election, fought in which constituencies, which loksabha members won from this
+type _Indian_Political_Party_Loksabha_Election_ {
+  id: ID!
+
+  loksabha_election: _Indian_Loksabha_Election_ @hasInverse(field: "participating_political_parties")
+  political_party: _Indian_Political_Party_ @hasInverse(field: "loksabha_elections")
+
+  candidates_constituencies: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "political_party")
+  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "election_winning_political_party")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# OBJECTIVES: which parties made a pre-poll coalition.
+type _Indian_Political_Party_Pre_Poll_Coalition_Loksabha_Election_ {
+  id: ID!
+
+  loksabha_election: _Indian_Loksabha_Election_ @hasInverse(field: "pre_poll_coalitions")
+  political_parties: [_Indian_Political_Party_Loksabha_Election_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# which politician was part of which party and from when to when
+# all politicians who are or have been menber
+type _Indian_Political_Party_Member_ {
+  id: ID!
+
+  politician: _Indian_Politician_ @hasInverse(field: "political_party_memberships")
+  party: _Indian_Political_Party_ @hasInverse(field: "members")
+
+  member_from: _Date_Time_
+  member_to: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

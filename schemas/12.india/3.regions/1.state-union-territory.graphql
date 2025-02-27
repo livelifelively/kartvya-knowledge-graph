@@ -1,0 +1,125 @@
+
+# DIRECTORY_NODE_TYPE
+# One node for every state or union territory
+# has multiple versions for different state of administrative structures at different times
+type _Indian_State_Union_Territory_ {
+  # districts blocks, tehsil etc.
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_state_union_territory")
+
+  state_or_union_territory: _Indian_State_Or_Union_Territory_Category_ @search(by: [hash])
+
+  regions: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "self")
+  versions: [_Indian_State_Union_Territory_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_State_Union_Territory_Reorganisation_] @hasInverse(field: "states_union_territories")
+
+  active_version: _Indian_State_Union_Territory_Version_
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  vehicle_code: String @search(by: [hash])
+  iso_code: String @search(by: [hash])
+
+  established_on: _Date_Time_ @hasInverse(field: "indian_state_union_territory_established_on")
+  disestablished_on: _Date_Time_ @hasInverse(field: "indian_state_union_territory_disestablished_on")
+
+  # TODO
+  # officials, events
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "state_or_union_territories")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_State_Union_Territory_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_state_union_territory_reorganisation")
+
+  # affected state_or_union_territory
+  states_union_territories: [_Indian_State_Union_Territory_] @hasInverse(field: "reorganisations")
+  # new versions of state_or_union_territory
+  state_or_union_territory_versions: [_Indian_State_Union_Territory_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_State_Union_Territory_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact]) # unique id for each all_district version
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  states_union_territories: [_Indian_State_Union_Territory_Version_]
+
+  # Metadata about all reorganisations that caused present state
+  # reorganisations: [_Indian_State_Union_Territory_Reorganisation_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_State_Union_Territory_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_State_Union_Territory_ @hasInverse(field: "versions")
+  region: _Indian_State_Union_Territory_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_State_Union_Territory_Reorganisation_ @hasInverse(field: "state_or_union_territory_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_State_Union_Territory_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_State_Union_Territory_ @hasInverse(field: "regions")
+  version: _Indian_State_Union_Territory_Version_ @hasInverse(field: "region")
+
+  osm_id: String @search(by: [hash])
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_states_union_territory_boundary")
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_]
+    @hasInverse(field: "states_union_territories")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "states_union_territories")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "states_union_territories")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_]
+    @hasInverse(field: "states_union_territories")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_]
+    @hasInverse(field: "states_union_territories")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

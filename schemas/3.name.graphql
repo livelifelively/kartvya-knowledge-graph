@@ -1,0 +1,81 @@
+# the "WHO" of 5W1H #ENTRY_NODE
+# #ENTRY_NODE
+# name of all entities in the knowledge graph.
+# an entry point for all.
+# one name can be shared by multiple entities.
+type _Name_ {
+  id: ID!
+
+  name: String! @id @search(by: [hash, term, fulltext])
+
+  # a set of characters can be same for different combinations of languages and scripts
+  language_script: [_Language_Script_]
+  case_sensitive: Boolean
+
+  # NAMES OF Languages and Scripts
+  language: [_Language_] @hasInverse(field: "names")
+  script: [_Script_] @hasInverse(field: "names")
+
+  person: [_Person_] @hasInverse(field: "names")
+
+  # NAMES OF public policy domains like defence, healthcare etc.
+  public_policy_domain: [_Public_Policy_Domain_] @hasInverse(field: "names")
+  public_policy_domain_group: [_Public_Policy_Domain_Group_] @hasInverse(field: "names")
+
+  # NAMES OF Countries
+  country: [_Country_] @hasInverse(field: "names")
+  # in_zonal_council: [_IN_Zonal_Council_]
+
+  map_data_source_name: [_Source_] @hasInverse(field: "names")
+
+  country_event: [_Country_Event_] @hasInverse(field: "names")
+  country_government: [_Country_Government_] @hasInverse(field: "names")
+
+  government_system_type_economic_system: [_Government_System_Types_Economic_System_] @hasInverse(field: "names")
+  government_system_type_religion: [_Government_System_Types_Religion_] @hasInverse(field: "names")
+  government_system_type_head_of_state_or_government: [_Government_System_Types_Head_Of_State_Or_Government]
+    @hasInverse(field: "names")
+  government_system_type_partisan_systems: [_Government_System_Types_Partisan_Systems_] @hasInverse(field: "names")
+  government_system_type_democracy: [_Government_System_Types_Democracy_] @hasInverse(field: "names")
+  government_system_type_oligarchy: [_Government_System_Types_Oligarchy_] @hasInverse(field: "names")
+  government_system_type_autocratic: [_Government_System_Types_Autocratic_] @hasInverse(field: "names")
+  government_system_type_monarchy: [_Government_System_Types_Monarchy_] @hasInverse(field: "names")
+  government_system_type_authority_distribution: [_Government_System_Types_Authority_Distribution_]
+    @hasInverse(field: "names")
+  government_system_type_authority_concentration: [_Government_System_Types_Authority_Concentration_]
+    @hasInverse(field: "names")
+  government_system_type_authority_source: [_Government_System_Types_Authority_Source_] @hasInverse(field: "names")
+  government_system_type_authority_status: [_Government_System_Types_Authority_Status_] @hasInverse(field: "names")
+
+  indian_union_government_department: [_Indian_Union_Government_Department_] @hasInverse(field: "names")
+  indian_union_government_ministry: [_Indian_Union_Government_Ministry_] @hasInverse(field: "names")
+  indian_government_official_role: [_Indian_Government_Official_Role_] @hasInverse(field: "names")
+
+  indian_union_parliament_loksabha: [_Indian_Loksabha_] @hasInverse(field: "names")
+
+  indian_loksabha_constituency: [_Indian_Loksabha_Constituency_] @hasInverse(field: "names")
+  indian_loksabha_constituency_reorganisation: [_Indian_Loksabha_Constituency_Reorganisation_]
+    @hasInverse(field: "names")
+  indian_loksabha_election: [_Indian_Loksabha_Election_] @hasInverse(field: "names")
+
+  indian_vidhansabha_constituency: [_Indian_Vidhansabha_Constituency_] @hasInverse(field: "names")
+  indian_vidhansabha_constituency_reorganisation: [_Indian_Vidhansabha_Constituency_Reorganisation_]
+    @hasInverse(field: "names")
+
+  indian_state_union_territory: [_Indian_State_Union_Territory_] @hasInverse(field: "names")
+  indian_state_union_territory_reorganisation: [_Indian_State_Union_Territory_Reorganisation_]
+    @hasInverse(field: "names")
+
+  indian_district: [_Indian_District_] @hasInverse(field: "names")
+  indian_district_reorganisation: [_Indian_District_Reorganisation_] @hasInverse(field: "names")
+
+  indian_sub_district: [_Indian_Sub_District_] @hasInverse(field: "names")
+  indian_sub_district_reorganisation: [_Indian_Sub_District_Reorganisation_] @hasInverse(field: "names")
+
+  indian_political_party: [_Indian_Political_Party_] @hasInverse(field: "names")
+
+  indian_legal_document: [_Indian_Legal_Document_] @hasInverse(field: "names")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

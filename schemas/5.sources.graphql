@@ -1,0 +1,28 @@
+# describe source
+type _Source_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # about source
+  names: [_Name_] @hasInverse(field: "map_data_source_name")
+  source_description: String
+
+  # link to source
+  source_urls: [String]
+
+  source_data: [_Source_Data_] @hasInverse(field: "source")
+}
+
+type _Source_Data_ {
+  id: ID!
+
+  source: _Source_ @hasInverse(field: "source_data")
+
+  # urls specific to the data
+  source_url: [String]
+  # original stringified data for this instance
+  source_data: String
+
+  geo: [_Geo_] @hasInverse(field: "source")
+}

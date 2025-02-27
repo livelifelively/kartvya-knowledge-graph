@@ -1,0 +1,68 @@
+# CREATE_NEW: whenever new loksabha is elected
+# may also have versions to cover by-elections
+type _Indian_Loksabha_ {
+  id: ID!
+
+  names: [_Name_] @hasInverse(field: "indian_union_parliament_loksabha")
+
+  loksabha_number: Int!
+
+  # elections and by-elections
+  elections: [_Indian_Loksabha_Election_] @hasInverse(field: "loksabha")
+
+  members: [_Indian_Loksabha_Member_] @hasInverse(field: "loksabha")
+  constituencies: [_Indian_Loksabha_Constituency_] @hasInverse(field: "loksabhas")
+
+  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "loksabha")
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "loksabha")
+  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "loksabha")
+  union_government: _Indian_Union_Government_ @hasInverse(field: "loksabha")
+
+  # sessions
+  # list debates and QnA
+  loksabha_sessions: [_Indian_Loksabha_Session_] @hasInverse(field: "loksabha")
+
+  term_start: _Date_Time_
+  term_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# for every new session
+type _Indian_Loksabha_Session_ {
+  id: ID!
+
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "loksabha_sessions")
+
+  # list all the debates, qnas
+  # questions_answers: []
+  # debates: []
+  # bills: []
+  # acts: []
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW
+# when someone wins an election
+type _Indian_Loksabha_Member_ {
+  id: ID!
+
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "members")
+  constituency_election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "winner")
+
+  constituency: _Indian_Loksabha_Constituency_ @hasInverse(field: "loksabha_members")
+  election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "election_winner")
+
+  position_held_by: _Indian_Politician_ @hasInverse(field: "loksabha_member")
+  election_winning_political_party: _Indian_Political_Party_Loksabha_Election_ @hasInverse(field: "loksabha_members")
+
+  tenure_start: _Date_Time_
+  tenure_end: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

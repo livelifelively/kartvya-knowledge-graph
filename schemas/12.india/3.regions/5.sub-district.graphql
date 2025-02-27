@@ -1,0 +1,110 @@
+type _Indian_Sub_District_ {
+  id: ID
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_sub_district")
+
+  regions: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "self")
+  versions: [_Indian_Sub_District_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_Sub_District_Reorganisation_] @hasInverse(field: "sub_districts")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  active_version: _Indian_Sub_District_Version_
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Sub_District_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_sub_district_reorganisation")
+
+  # affected districts
+  sub_districts: [_Indian_Sub_District_] @hasInverse(field: "reorganisations")
+  # new versions of districts
+  sub_district_versions: [_Indian_Sub_District_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_Sub_District_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact]) # unique id for each all_district version
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all sub_districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  sub_districts: [_Indian_Sub_District_Version_]
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Sub_District_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_Sub_District_ @hasInverse(field: "versions")
+  region: _Indian_Sub_District_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_Sub_District_Reorganisation_ @hasInverse(field: "sub_district_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# e.g. if a district is divided. the child_district will have both region and self established on as same_date
+# for parent_district, there will be new region with same_date, old parent_district region will have destablished_on as same_date
+type _Indian_Sub_District_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_Sub_District_ @hasInverse(field: "regions")
+  version: _Indian_Sub_District_Version_ @hasInverse(field: "region")
+
+  osm_id: String @search(by: [hash])
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "sub_districts")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "sub_districts")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "sub_districts")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_] @hasInverse(field: "sub_districts")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_] @hasInverse(field: "sub_districts")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_sub_district_boundary")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

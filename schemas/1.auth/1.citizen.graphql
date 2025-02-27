@@ -1,0 +1,21 @@
+type _Citizen_Profile_ {
+  id: ID
+
+  user: User @hasInverse(field: "citizen_profile")
+
+  # for now country defaults to India
+  # country: [_Country_]
+
+  # what should the user follow? region version or entity?
+  # I think root entity it holds the identity of the region for the given time and connects to everything else.
+  state_or_union_territories: [_Indian_State_Union_Territory_] @hasInverse(field: "citizen_followers")
+  districts: [_Indian_District_] @hasInverse(field: "citizen_followers")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_] @hasInverse(field: "citizen_followers")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_] @hasInverse(field: "citizen_followers")
+
+  # policy subjects
+  policy_domains: [_Public_Policy_Domain_] @hasInverse(field: "citizen_followers")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

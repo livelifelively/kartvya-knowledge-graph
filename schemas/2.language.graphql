@@ -1,0 +1,41 @@
+# language and scripts
+# text, especially names can be in multiple languages and scripts
+type _Language_ {
+  id: ID!
+
+  name_en: String! @id
+  names: [_Name_] @hasInverse(field: "language")
+  scripts: [_Script_] @hasInverse(field: "languages")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Script_ {
+  id: ID!
+
+  name_en: String! @id
+  names: [_Name_] @hasInverse(field: "script")
+  languages: [_Language_] @hasInverse(field: "scripts")
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# instance of language + script combination.
+type _Language_Script_ {
+  id: ID!
+
+  name_en: String! @id
+  language: _Language_!
+  script: _Script_!
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

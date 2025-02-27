@@ -1,0 +1,52 @@
+type _Public_Policy_Domain_Group_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [hash, term])
+
+  names: [_Name_] @hasInverse(field: "public_policy_domain_group")
+  description: String
+
+  domains_in_group: [_Public_Policy_Domain_] @hasInverse(field: "public_policy_domain_group")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Public_Policy_Domain_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [hash, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "public_policy_domain")
+  description: String
+
+  public_policy_domain_group: _Public_Policy_Domain_Group_ @hasInverse(field: "domains_in_group")
+
+  super_domain: [_Public_Policy_Domain_] @hasInverse(field: "sub_domain")
+  sub_domain: [_Public_Policy_Domain_] @hasInverse(field: "super_domain")
+
+  government_ministries_departments: _Public_Policy_Domain_Government_Ministries_Departments_
+    @hasInverse(field: "public_policy_domain")
+
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "policy_domains")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# LISTING_NODE. connects all national and state ministries/departments in domains.
+type _Public_Policy_Domain_Government_Ministries_Departments_ {
+  id: ID!
+
+  public_policy_domain: [_Public_Policy_Domain_] @hasInverse(field: "government_ministries_departments")
+
+  indian_union_government_ministries: [_Indian_Union_Government_Ministry_]
+    @hasInverse(field: "policy_domain_ministries_list")
+  indian_union_government_departments: [_Indian_Union_Government_Department_]
+    @hasInverse(field: "policy_domain_departments_list")
+  # indian_state_government: [_Indian_Union_Government_Ministry_]
+  # indian_union_territory_government: [_Indian_Union_Government_Ministry_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

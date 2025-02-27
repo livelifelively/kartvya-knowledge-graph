@@ -1,0 +1,46 @@
+# SINGLE_NODE_TYPE
+# DIRECTORY_NODE_TYPE
+# one node for India
+# has multiple versions for different state of administrative structures at different times
+type _Indian_Administrative_Divisions {
+  id: ID!
+
+  states_union_territories: [_Indian_State_Union_Territory_]
+  districts: [_Indian_District_]
+}
+
+# SINGLE_NODE_TYPE
+# DIRECTORY_NODE_TYPE
+# one node for India
+# has multiple versions for different state of legislative structures at different times
+type _Indian_Legislative_Divisions {
+  id: ID!
+
+  # states_union_territories: [_Indian_State_Union_Territory_]
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_]
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_]
+}
+
+# # district courts? location of courts
+# type _Indian_Judicial_Divisions {
+#   id: ID!
+# }
+
+enum _Indian_State_Or_Union_Territory_Category_ {
+  State
+  Union_Territory
+}
+
+enum _Indian_Division_Version_Change_ {
+  Formation
+  Reorganisation
+}
+
+enum _Indian_Legislative_Constituency_Reservation_ {
+  SC
+  ST
+  NONE
+  SANGHA
+  BL
+}
+

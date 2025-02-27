@@ -1,0 +1,41 @@
+enum _Indian_Legal_Document_Category_ {
+  Constitution
+  Bill
+  Act
+  Notification
+  Rules
+  Regulation
+  Order
+}
+
+type _Indian_Legal_Document_ {
+  id: ID!
+
+  # english title that can be searched
+  name_id: String! @id @search(by: [hash, term, fulltext])
+
+  # title in multiple languages
+  names: [_Name_!]! @hasInverse(field: "indian_legal_document")
+
+  description: String
+  document_type: _Indian_Legal_Document_Category_! @search(by: [exact])
+
+  # is_notified: Boolean!
+
+  # active_version: _Indian_Legal_Document_Version_
+  # versions: [_Indian_Legal_Document_Version_]
+
+  # structural_elements: [_Indian_Legal_Document_Structural_Element_]
+  # amendments: [_Indian_Legal_Document_Amendment_]
+
+  # enactment_date: DateTime @search
+  # enforcement_date: DateTime @search
+
+  # ministry
+  # department
+
+  # state
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

@@ -1,0 +1,5 @@
+type _Node_Update_ {
+  id: ID!
+  comment: String
+  updated_on: DateTime @search
+}

@@ -1,0 +1,123 @@
+# DIRECTORY_NODE_TYPE
+# One node for every district
+# has multiple versions for different state of administrative structures at different times
+type _Indian_District_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_district")
+
+  regions: [_Indian_District_Version_Region_] @hasInverse(field: "self")
+
+  versions: [_Indian_District_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_District_Reorganisation_] @hasInverse(field: "districts")
+
+  active_version: _Indian_District_Version_
+
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+  citizen_followers: [_Citizen_Profile_] @hasInverse(field: "districts")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_District_Reorganisation_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+  names: [_Name_] @hasInverse(field: "indian_district_reorganisation")
+
+  # TODO should this be bidirectional?
+  # Should all changes made to direct sub-regions be added to parent?
+  state_or_union_territory: _Indian_State_Union_Territory_Version_Region_
+
+  # affected districts
+  districts: [_Indian_District_] @hasInverse(field: "reorganisations")
+  # new versions of districts
+  district_versions: [_Indian_District_Version_] @hasInverse(field: "reorganisation")
+
+  reorganised_on: _Date_Time_
+}
+
+type _Indian_District_Version_Group_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact]) # unique id for each all_district version
+  name_id: String @search(by: [exact])
+
+  # The date and time this version of all districts became active
+  established_on: DateTime
+
+  # Not bidirectional
+  districts: [_Indian_District_Version_]
+
+  # Metadata about the reason this node was created
+  # reorganisation: _Indian_District_Reorganisation_
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_District_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  # TODO need to establish relation with previous version, and show what are the changes made
+
+  # not bidirectional because that name will be there in the main node,
+  # thus the purpose of having an entry point is fulfilled already.
+  official_name: _Name_
+
+  self: _Indian_District_ @hasInverse(field: "versions")
+  region: _Indian_District_Version_Region_ @hasInverse(field: "version")
+
+  reorganisation: _Indian_District_Reorganisation_ @hasInverse(field: "district_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # TODO
+  # officials, events
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# e.g. if a district is divided. the child_district will have both region and self established on as same_date
+# for parent_district, there will be new region with same_date, old parent_district region will have destablished_on as same_date
+type _Indian_District_Version_Region_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  self: _Indian_District_ @hasInverse(field: "regions")
+  version: _Indian_District_Version_ @hasInverse(field: "region")
+
+  osm_id: String @search(by: [hash])
+
+  states_union_territories: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "districts")
+  districts: [_Indian_District_Version_Region_] @hasInverse(field: "districts")
+  sub_districts: [_Indian_Sub_District_Version_Region_] @hasInverse(field: "districts")
+  loksabha_constituencies: [_Indian_Loksabha_Constituency_Version_Region_] @hasInverse(field: "districts")
+  vidhansabha_constituencies: [_Indian_Vidhansabha_Constituency_Version_Region_] @hasInverse(field: "districts")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  geo_boundary: [_Geo_] @hasInverse(field: "indian_district_boundary")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

@@ -1,0 +1,124 @@
+# CREATE_NEW
+# every general election
+# every loksabha by-election
+type _Indian_Loksabha_Election_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_loksabha_election")
+
+  # for which loksabha
+  loksabha: _Indian_Loksabha_ @hasInverse(field: "elections")
+
+  # how many phases
+  phases: [_Indian_Loksabha_Election_Phase_] @hasInverse(field: "election")
+
+  # all the participating constituencies
+  constituency_election: [_Indian_Loksabha_Constituency_Election_] @hasInverse(field: "election")
+
+  participating_political_parties: [_Indian_Political_Party_Loksabha_Election_] @hasInverse(field: "loksabha_election")
+  pre_poll_coalitions: [_Indian_Political_Party_Pre_Poll_Coalition_Loksabha_Election_]
+    @hasInverse(field: "loksabha_election")
+
+  # no updates field. redundancy acceptable
+  started_on: _Date_Time_
+  completed_on: _Date_Time_
+
+  result: _Indian_Loksabha_Election_Result_ @hasInverse(field: "election")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Election_Result_ {
+  id: ID!
+
+  election: _Indian_Loksabha_Election_ @hasInverse(field: "result")
+  constituency_election_result: [_Indian_Loksabha_Constituency_Election_Result_] @hasInverse(field: "election_result")
+
+  result_declaration_date: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# CREATE_NEW:
+# 1. every loksabha election that is completed in multiple phases
+type _Indian_Loksabha_Election_Phase_ {
+  id: ID!
+
+  election: _Indian_Loksabha_Election_ @hasInverse(field: "phases")
+  election_date: _Date_Time_
+
+  constituency_election: [_Indian_Loksabha_Constituency_Election_] @hasInverse(field: "election_phase")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Election_ {
+  id: ID!
+
+  election: _Indian_Loksabha_Election_ @hasInverse(field: "constituency_election")
+  election_phase: _Indian_Loksabha_Election_Phase_ @hasInverse(field: "constituency_election")
+
+  constituency: _Indian_Loksabha_Constituency_ @hasInverse(field: "elections")
+  candidates: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "election")
+  # participating_political_parties: [_Indian_Political_Party_Loksabha_Election_] @hasInverse(field: "constituencies")
+
+  election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "constituency_election")
+  election_winner: _Indian_Loksabha_Member_ @hasInverse(field: "election")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# objective: which politician from which party fought which election and got what results
+type _Indian_Loksabha_Constituency_Election_Candidate_ {
+  id: ID!
+
+  candidate: _Indian_Politician_ @hasInverse(field: "loksabha_elections_contested")
+  political_party: _Indian_Political_Party_Loksabha_Election_ @hasInverse(field: "candidates_constituencies")
+
+  election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "candidates")
+  constituency_election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "candidates")
+  candidate_result: _Indian_Loksabha_Constituency_Election_Result_Candidate_Data_ @hasInverse(field: "candidate")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Election_Result_ {
+  id: ID!
+
+  election_result: _Indian_Loksabha_Election_Result_ @hasInverse(field: "constituency_election_result")
+
+  constituency_election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "election_result")
+
+  total_voters: Int
+  voter_turnout: Int
+  voter_turnout_percentage: Float
+
+  candidates: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "constituency_election_result")
+  candidate_result: [_Indian_Loksabha_Constituency_Election_Result_Candidate_Data_] @hasInverse(field: "overall_result")
+
+  # connect to the loksabha member
+  winner: _Indian_Loksabha_Member_ @hasInverse(field: "constituency_election_result")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Loksabha_Constituency_Election_Result_Candidate_Data_ {
+  id: ID!
+
+  candidate: _Indian_Loksabha_Constituency_Election_Candidate_ @hasInverse(field: "candidate_result")
+  overall_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "candidate_result")
+
+  votes_count: Int
+  votes_percentage: Float
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
