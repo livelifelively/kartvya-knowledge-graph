@@ -152,6 +152,9 @@ type _Name_ {
 
   person: [_Person_] @hasInverse(field: "names")
 
+  metric: [_Metric_] @hasInverse(field: "names")
+  metric_unit: [_Metric_Unit_] @hasInverse(field: "names")
+
   # NAMES OF public policy domains like defence, healthcare etc.
   public_policy_domain: [_Public_Policy_Domain_] @hasInverse(field: "names")
   public_policy_domain_group: [_Public_Policy_Domain_Group_] @hasInverse(field: "names")
@@ -213,6 +216,7 @@ type _Name_ {
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }
+
 # ----- END name.graphql ----- 
 
 # ----- person.graphql ----- 
@@ -399,6 +403,60 @@ type _Date_Time_ {
 }
 
 # ----- END date-time.graphql ----- 
+
+# ----- metrics.graphql ----- 
+enum _Metric_Data_Type_ {
+  Categorical_Nominal
+  Categorical_Ordinal
+  Numerical_Discrete_Interval
+  Numerical_Discrete_Ratio
+  Numerical_Continuous_Interval
+  Numerical_Continuous_Ratio
+}
+
+type _Metric_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "metric")
+
+  description: String
+  tags: [String] @search(by: [exact, term, fulltext])
+
+  units: [_Metric_Unit_!]! @hasInverse(field: "metric")
+  dataType: _Metric_Data_Type_!
+}
+
+type _Metric_Unit_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_!]! @hasInverse(field: "metric_unit")
+
+  description: String
+  metric: _Metric_! @hasInverse(field: "units")
+}
+
+type _Data_Value_ {
+  id: ID!
+  metric: _Metric_
+  unit: _Metric_Unit_
+
+  numerical_value: Float
+  categorical_value: String
+}
+
+# type _Admin_Region_Data_Time_Range {
+#   id: ID!
+
+#   data_value: _Data_Value_
+
+#   datetime_from: _Date_Time_
+#   datetime_to: _Date_Time_
+
+#   administrative_region: Administrative_Region
+# }
+
+# ----- END metrics.graphql ----- 
 
 # ----- country.graphql ----- 
 # the "WHAT" of 5W1H.

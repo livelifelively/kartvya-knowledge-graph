@@ -30,6 +30,8 @@ export const schemaOrder: SchemaOrderConfig = [
   
   // Time-related schemas
   "date-time.graphql",
+
+  "metrics.graphql",
   
   // Country-specific schemas
   "country.graphql",

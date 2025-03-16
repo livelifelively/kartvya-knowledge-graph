@@ -1,0 +1,50 @@
+enum _Metric_Data_Type_ {
+  Categorical_Nominal
+  Categorical_Ordinal
+  Numerical_Discrete_Interval
+  Numerical_Discrete_Ratio
+  Numerical_Continuous_Interval
+  Numerical_Continuous_Ratio
+}
+
+type _Metric_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "metric")
+
+  description: String
+  tags: [String] @search(by: [exact, term, fulltext])
+
+  units: [_Metric_Unit_!]! @hasInverse(field: "metric")
+  dataType: _Metric_Data_Type_!
+}
+
+type _Metric_Unit_ {
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_!]! @hasInverse(field: "metric_unit")
+
+  description: String
+  metric: _Metric_! @hasInverse(field: "units")
+}
+
+type _Data_Value_ {
+  id: ID!
+  metric: _Metric_
+  unit: _Metric_Unit_
+
+  numerical_value: Float
+  categorical_value: String
+}
+
+# type _Admin_Region_Data_Time_Range {
+#   id: ID!
+
+#   data_value: _Data_Value_
+
+#   datetime_from: _Date_Time_
+#   datetime_to: _Date_Time_
+
+#   administrative_region: Administrative_Region
+# }
