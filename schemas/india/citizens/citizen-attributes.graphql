@@ -1,0 +1,107 @@
+enum _Citizen_Attribute_Category_Type_ {
+  Demographic # Gender, ethnicity, etc. (rarely changes)
+  Life_Stage # Age groups, pregnancy, etc. (changes predictably)
+  Socioeconomic # Income level, employment status (changes unpredictably)
+  Health_Status # Medical conditions, disability status (episodic changes)
+  Geographic # Rural/urban, specific regions (changes occasionally)
+  Educational # Education level, student status (changes in steps)
+  Occupational # Job type, sector (changes occasionally)
+  Situational # Temporary circumstances (disaster affected, etc.)
+}
+
+enum _Citizen_Attribute_Category_Typical_Change_Frequency_ {
+  Never
+  Yearly
+  Monthly
+  Weekly
+  Daily
+}
+
+type _Citizen_Attribute_Category_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "citizen_attribute_categories")
+
+  description: String
+
+  # What type of attribute is this?
+  category_type: _Citizen_Attribute_Category_Type_ @search(by: [exact])
+
+  # Is this a binary attribute (yes/no) or can it have multiple values?
+  is_binary: Boolean
+
+  # How frequently does this attribute typically change?
+  typical_change_frequency: _Citizen_Attribute_Category_Typical_Change_Frequency_ @search(by: [exact])
+
+  # Benefits targeting citizens with this attribute
+  targeted_by_benefits: [_Indian_Union_Government_Service_Benefits_] @hasInverse(field: "target_citizen_attributes")
+
+  # Versions of this attribute category (for tracking changes in definition)
+  versions: [_Citizen_Attribute_Category_Version_] @hasInverse(field: "attribute_category")
+
+  # Active version of this attribute category
+  active_version: _Citizen_Attribute_Category_Version_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# versions of a citizen attribute category
+# for example, the definition of "citizen" has changed over time.
+# how definitions change over time is important for understanding the evolution of a service
+# e.g. definition of "poverty" has changed over time, and this has changed the eligibility criteria for many benefits
+type _Citizen_Attribute_Category_Version_ {
+  id: ID!
+
+  attribute_category: _Citizen_Attribute_Category_ @hasInverse(field: "versions")
+
+  # Previous and next versions for tracking history
+  previous_version: _Citizen_Attribute_Category_Version_
+  successor_version: _Citizen_Attribute_Category_Version_
+
+  # Definition for this version
+  definition: String
+
+  # Criteria for inclusion in this category
+  inclusion_criteria: String
+
+  # Time period this definition was active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Union_Government_Service_Benefit_Eligibility_Rule_ {
+  id: ID!
+
+  benefit: _Indian_Union_Government_Service_Benefits_ @hasInverse(field: "eligibility_rules")
+
+  # Required individual attributes (AND logic)
+  required_individual_attributes: [_Citizen_Attribute_Category_]
+
+  # Required group attributes (AND logic)
+  required_group_attributes: [_Citizen_Group_Attribute_Category_]
+
+  # Optional individual attributes (OR logic)
+  optional_individual_attributes: [_Citizen_Attribute_Category_]
+
+  # Optional group attributes (OR logic)
+  optional_group_attributes: [_Citizen_Group_Attribute_Category_]
+
+  # Excluded individual attributes (NOT logic)
+  excluded_individual_attributes: [_Citizen_Attribute_Category_]
+
+  # Excluded group attributes (NOT logic)
+  excluded_group_attributes: [_Citizen_Group_Attribute_Category_]
+
+  # Time period this rule was active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

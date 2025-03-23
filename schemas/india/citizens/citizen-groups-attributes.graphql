@@ -1,0 +1,93 @@
+enum _Citizen_Group_Attribute_Category_Type_ {
+  Family_Type # Nuclear, joint, single-parent, etc.
+  Geographic_Community # Village, urban neighborhood, etc.
+  Administrative_Region # District, block, etc.
+  Social_Classification # Caste, tribe, religious community
+  Economic_Classification # Income bracket, poverty status
+  Occupational_Sector # Agricultural, industrial, service sector
+  Organization_Type # Self-help group, cooperative, etc.
+  Special_Status # Disaster-affected, migrant, etc.
+}
+
+enum _Citizen_Group_Attribute_Typical_Change_Frequency_ {
+  Never
+  Yearly
+  Monthly
+  Weekly
+  Daily
+}
+
+type _Citizen_Group_Attribute_Category_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "citizen_group_attribute_categories")
+
+  description: String
+
+  # What type of group attribute is this?
+  category_type: _Citizen_Group_Attribute_Category_Type_ @search(by: [exact])
+
+  # Is this a binary attribute (yes/no) or can it have multiple values?
+  is_binary: Boolean
+
+  # How frequently does this attribute typically change?
+  typical_change_frequency: _Citizen_Group_Attribute_Typical_Change_Frequency_ @search(by: [exact])
+
+  # Benefits targeting groups with this attribute
+  targeted_by_benefits: [_Indian_Union_Government_Service_Benefits_]
+    @hasInverse(field: "target_citizen_group_attributes")
+
+  # Versions of this group attribute (for tracking changes in definition)
+  versions: [_Citizen_Group_Attribute_Category_Version_] @hasInverse(field: "attribute_category")
+
+  # Active version of this group attribute
+  active_version: _Citizen_Group_Attribute_Category_Version_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Versions of a citizen group attribute category
+type _Citizen_Group_Attribute_Category_Version_ {
+  id: ID!
+
+  attribute_category: _Citizen_Group_Attribute_Category_ @hasInverse(field: "versions")
+
+  # Previous and next versions for tracking history
+  previous_version: _Citizen_Group_Attribute_Category_Version_
+  successor_version: _Citizen_Group_Attribute_Category_Version_
+
+  # Definition for this version
+  definition: String
+
+  # Criteria for inclusion in this category
+  inclusion_criteria: String
+
+  # Time period this definition was active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Relationships between group attributes
+# For modeling hierarchical or overlapping attributes
+type _Citizen_Group_Attribute_Relationship_ {
+  id: ID!
+
+  # The attributes in this relationship
+  parent_attribute: _Citizen_Group_Attribute_Category_
+  child_attribute: _Citizen_Group_Attribute_Category_
+
+  # Type of relationship
+  relationship_type: String # "contains", "overlaps", "excludes", etc.
+  # Time period this relationship was active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
