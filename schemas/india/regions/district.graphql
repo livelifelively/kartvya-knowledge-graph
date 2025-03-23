@@ -35,6 +35,9 @@ type _Indian_District_Reorganisation_ {
   name_id: String @search(by: [exact])
   names: [_Name_] @hasInverse(field: "indian_district_reorganisation")
 
+  # Link to the historical event that caused this reorganization
+  historical_event: _Indian_Event_Administrative_Region_Reorganisation_ @hasInverse(field: "district_reorganisations")
+
   # TODO should this be bidirectional?
   # Should all changes made to direct sub-regions be added to parent?
   state_or_union_territory: _Indian_State_Union_Territory_Version_Region_
@@ -47,6 +50,7 @@ type _Indian_District_Reorganisation_ {
   reorganised_on: _Date_Time_
 }
 
+# active versions of all districts at a point in time
 type _Indian_District_Version_Group_ {
   id: ID!
 
@@ -72,7 +76,9 @@ type _Indian_District_Version_ {
 
   name_id: String! @id @search(by: [exact, term, fulltext])
 
-  # TODO need to establish relation with previous version, and show what are the changes made
+  # Explicit relationships with previous and next versions
+  previous_version: _Indian_District_Version_
+  successor_version: _Indian_District_Version_
 
   # not bidirectional because that name will be there in the main node,
   # thus the purpose of having an entry point is fulfilled already.

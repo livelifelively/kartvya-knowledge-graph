@@ -1,0 +1,32 @@
+# Events related to administrative region reorganizations in India
+type _Indian_Event_Administrative_Region_Reorganisation_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_administrative_region_reorganisation_event")
+
+  description: String
+
+  # Event metadata
+  event_date: _Date_Time_
+  event_type: String @search(by: [exact]) # e.g., "legislation", "court_order", "administrative_decision"
+  # Official documents and references
+  official_document_reference: String @search(by: [fulltext])
+  official_document_url: String
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  # Relationships to reorganizations
+  district_reorganisations: [_Indian_District_Reorganisation_] @hasInverse(field: "historical_event")
+  state_union_territory_reorganisations: [_Indian_State_Union_Territory_Reorganisation_]
+    @hasInverse(field: "historical_event")
+  sub_district_reorganisations: [_Indian_Sub_District_Reorganisation_] @hasInverse(field: "historical_event")
+  loksabha_constituency_reorganisations: [_Indian_Loksabha_Constituency_Reorganisation_]
+    @hasInverse(field: "historical_event")
+  vidhansabha_constituency_reorganisations: [_Indian_Vidhansabha_Constituency_Reorganisation_]
+    @hasInverse(field: "historical_event")
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
