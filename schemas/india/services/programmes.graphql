@@ -1,0 +1,139 @@
+enum _Indian_Union_Government_Ministry_Program_Status_ {
+  Active
+  Completed
+  Planned
+}
+
+enum _Indian_Union_Government_Ministry_Program_Version_Change_ {
+  Created
+  Modified
+  Merged
+  Split
+  Renamed
+  Budget_Changed
+  Scope_Changed
+  Ministry_Changed
+  Depa
+}
+
+# DIRECTORY_NODE_TYPE
+# One node for every program
+# has multiple versions for different states at different times
+type _Indian_Union_Government_Ministry_Program_ {
+  # ministry policy to implementation plans and budget
+  id: ID!
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_union_government_ministry_program")
+
+  description: String
+
+  # Which ministry owns this program
+  owner_ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "programs")
+
+  # Policy domains this program addresses
+  policy_domains: [_Public_Policy_Domain_]
+
+  # Services offered under this program
+  services: [_Indian_Union_Government_Service_] @hasInverse(field: "program")
+
+  # parent program
+  parent_program: _Indian_Union_Government_Ministry_Program_
+  child_programs: [_Indian_Union_Government_Ministry_Program_] @hasInverse(field: "parent_program")
+
+  # Program timeline
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  versions: [_Indian_Union_Government_Ministry_Program_Version_] @hasInverse(field: "self")
+  reorganisations: [_Indian_Union_Government_Ministry_Program_Reorganisation_] @hasInverse(field: "programs")
+
+  active_version: _Indian_Union_Government_Ministry_Program_Version_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Union_Government_Ministry_Program_Reorganisation_ {
+  id: ID!
+
+  # Link to the historical event that caused this reorganization
+  historical_event: _Indian_Event_Ministry_Program_Reorganisation_ @hasInverse(field: "program_reorganisations")
+
+  # affected programs
+  programs: [_Indian_Union_Government_Ministry_Program_] @hasInverse(field: "reorganisations")
+  # new versions of programs
+  program_versions: [_Indian_Union_Government_Ministry_Program_Version_] @hasInverse(field: "reorganisation")
+
+  # changes in the program
+  changes: [_Indian_Union_Government_Ministry_Program_Version_Change_]
+
+  reorganised_on: _Date_Time_
+}
+
+# active versions of all programs at a point in time
+# objective is to simplify the query and have easy access to all active versions at a point in time
+type _Indian_Union_Government_Ministry_Program_Version_Group_ {
+  id: ID!
+
+  # The date and time this version of all programs became active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  versions: [_Indian_Union_Government_Ministry_Program_Version_] @hasInverse(field: "program")
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Union_Government_Ministry_Program_Version_ {
+  id: ID!
+
+  # name_id: String! @id @search(by: [exact, term, fulltext])
+
+  previous_version: _Indian_Union_Government_Ministry_Program_Version_
+  successor_version: _Indian_Union_Government_Ministry_Program_Version_
+
+  self: _Indian_Union_Government_Ministry_Program_ @hasInverse(field: "versions")
+
+  # The reorganisation that preceded this version
+  reorganisation: _Indian_Union_Government_Ministry_Program_Reorganisation_ @hasInverse(field: "program_versions")
+
+  # description of the changes in this version with reference to the previous version
+  version_description: String
+
+  # status of the program for this version
+  program_status: _Indian_Union_Government_Ministry_Program_Status_ @search(by: [exact])
+
+  # Departments implementing this version of the program
+  implementing_departments: [_Indian_Union_Government_Ministry_Program_Version_Department_]
+    @hasInverse(field: "program_version")
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Departments implementing this version of the program
+type _Indian_Union_Government_Ministry_Program_Version_Department_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+
+  program_version: _Indian_Union_Government_Ministry_Program_Version_ @hasInverse(field: "implementing_departments")
+  department: _Indian_Union_Government_Department_ @hasInverse(field: "program_implementations")
+
+  # Role of department in this program version
+  role_description: String
+
+  # Is this department the primary implementer?
+  is_primary_implementer: Boolean @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
