@@ -13,7 +13,7 @@ enum _Indian_Union_Government_Ministry_Program_Version_Change_ {
   Budget_Changed
   Scope_Changed
   Ministry_Changed
-  Depa
+  Department_Changed
 }
 
 # DIRECTORY_NODE_TYPE
@@ -35,6 +35,9 @@ type _Indian_Union_Government_Ministry_Program_ {
 
   # Services offered under this program
   services: [_Indian_Union_Government_Service_] @hasInverse(field: "program")
+
+  # Service delivery nodes for this program
+  service_delivery_nodes: [_Indian_Union_Government_Service_Delivery_Node_] @hasInverse(field: "programs")
 
   # parent program
   parent_program: _Indian_Union_Government_Ministry_Program_
@@ -79,7 +82,7 @@ type _Indian_Union_Government_Ministry_Program_Version_Group_ {
   established_on: _Date_Time_
   disestablished_on: _Date_Time_
 
-  versions: [_Indian_Union_Government_Ministry_Program_Version_] @hasInverse(field: "program")
+  versions: [_Indian_Union_Government_Ministry_Program_Version_] @hasInverse(field: "self")
 
   # Audit fields
   node_created_on: DateTime

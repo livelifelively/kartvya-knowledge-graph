@@ -1,0 +1,284 @@
+enum _Nature_Of_Service_ {
+  Financial_Assistance
+  Technical_Assistance
+  Advisory
+  Quality_Assurance
+  Audit
+  Monitoring
+  Evaluation
+  Medical_Assistance
+  Training
+}
+
+enum _Indian_Union_Government_Service_Beneficiary_Type_ {
+  # focused on individual citizen. personal benefit
+  Citizen
+  # focused on a group of citizens. group benefit
+  Citizen_Group
+  # focused on a business. business benefit
+  Business
+  # focused on a union government organization. union government benefit
+  Union_Government_Organization
+  # focused on a state government organization. state government Benefit
+  State_Government_Organization
+}
+
+type _Indian_Union_Government_Service_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_union_government_service")
+
+  description: String
+
+  nature_of_service: _Nature_Of_Service_ @search(by: [exact])
+
+  # Program this service is part of
+  program: _Indian_Union_Government_Ministry_Program_ @hasInverse(field: "services")
+
+  # Nodes that deliver this service
+  delivery_nodes: [_Indian_Union_Government_Service_Delivery_Node_] @hasInverse(field: "services")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+
+  # TODO possible additional fields in the future
+  # Citizen feedback for this service
+  # citizen_feedback: [_Indian_Union_Government_Service_Feedback_] @hasInverse(field: "service")
+
+  # Legal basis for this service
+  # legal_basis: [_Indian_Legal_Document_]
+
+  # Benefits provided by this service
+  benefits: [_Indian_Union_Government_Service_Benefits_] @hasInverse(field: "services")
+
+  # Eligibility criteria for this service
+  # eligibility_criteria: [_Indian_Union_Government_Service_Eligibility_] @hasInverse(field: "service")
+
+  # Performance metrics for this service
+  # performance_metrics: [_Indian_Union_Government_Service_Performance_Metrics_] @hasInverse(field: "service")
+
+  # Process to access this service
+  # delivery_process: _Indian_Union_Government_Service_Process_ @hasInverse(field: "service")
+}
+
+# Benefits provided by this service to specific beneficiary type
+type _Indian_Union_Government_Service_Benefits_ {
+  # what are the end goals of those services?
+  id: ID!
+
+  names: [_Name_] @hasInverse(field: "indian_union_government_service_benefits")
+
+  description: String
+
+  # Services that provide this benefit (changed from singular to plural)
+  services: [_Indian_Union_Government_Service_] @hasInverse(field: "benefits")
+
+  # Beneficiaries of this service
+  beneficiary_type: _Indian_Union_Government_Service_Beneficiary_Type_ @search(by: [exact])
+
+  # Individual citizen attributes targeted by this benefit
+  target_citizen_attributes: [_Citizen_Attribute_Category_] @hasInverse(field: "targeted_by_benefits")
+
+  # Group attributes targeted by this benefit
+  target_citizen_group_attributes: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "targeted_by_benefits")
+
+  # Complex eligibility rules for this benefit
+  eligibility_rules: [_Indian_Union_Government_Service_Benefit_Eligibility_Rule_] @hasInverse(field: "benefit")
+
+  # What problem does this benefit address?
+  # addresses_policy_objectives: [_Policy_Domain_Objectives_] @hasInverse(field: "addressed_by_benefits")
+
+  # Benefit details
+  # benefit_type: String # financial, healthcare, education, etc.
+  # benefit_value: String # monetary value or description
+  # benefit_duration: String
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+enum _Service_Delivery_Node_Type_ {
+  Physical_Office
+  Mobile_App
+  Website
+  Call_Center
+  SMS
+  Email
+  Social_Media
+  Kiosk
+  Mobile_Van
+  Door_To_Door_Delivery_Officials
+}
+
+# A node that delivers a service
+# e.g. District NCD Clinics is a _Indian_Union_Government_Service_Delivery_Node_
+type _Indian_Union_Government_Service_Delivery_Node_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_union_government_service_delivery_node")
+  description: String
+
+  # Programs this node type is part of
+  programs: [_Indian_Union_Government_Ministry_Program_] @hasInverse(field: "service_delivery_nodes")
+
+  # Services delivered through this node type
+  services: [_Indian_Union_Government_Service_] @hasInverse(field: "delivery_nodes")
+
+  # Instances of this node type
+  instances: [_Indian_Union_Government_Service_Delivery_Node_Instance_] @hasInverse(field: "node_type")
+
+  # Channels used by this node type
+  node_type: _Service_Delivery_Node_Type_ @search(by: [exact])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# An instance of a service delivery node
+# e.g. District NCD Clinic in New Delhi is an _Indian_Union_Government_Service_Delivery_Node_Instance_
+type _Indian_Union_Government_Service_Delivery_Node_Instance_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_union_government_service_delivery_node_instance")
+
+  description: String
+
+  versions: [_Indian_Union_Government_Service_Delivery_Node_Instance_Version_] @hasInverse(field: "self")
+
+  active_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+type _Indian_Union_Government_Service_Delivery_Node_Instance_Version_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_union_government_service_delivery_node_instance_version")
+
+  self: _Indian_Union_Government_Service_Delivery_Node_Instance_ @hasInverse(field: "versions")
+
+  description: String
+
+  # if the node is a physical office
+  location: _Geo_
+  # if the node is a mobile app
+  app_store_link: String
+  # if the node is a website
+  website_link: String
+  # if the node is a call center
+  call_center_number: String
+  # if the node is a SMS
+  sms_number: String
+  # if the node is a social media
+  social_media_handle: String
+  # if the node is a Kiosk
+  kiosk_number: String
+  # if the node is a mobile van
+  mobile_van_number: String
+  # if the node is a door to door delivery official
+  door_to_door_delivery_official_number: String
+  # if the node is an email
+  email_address: String
+
+  update: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Update_ @hasInverse(field: "version")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+}
+
+enum _Change_Type_ {
+  Location_Change
+  Contact_Information_Change
+
+  Website_Link_Change
+  Website_Link_Broken
+
+  App_Store_Link_Change
+  App_Store_Link_Broken
+
+  Call_Center_Number_Change
+  Call_Center_Number_Broken
+
+  SMS_Number_Change
+  SMS_Number_Broken
+
+  Social_Media_Handle_Change
+  Social_Media_Handle_Broken
+
+  Kiosk_Number_Change
+  Kiosk_Number_Broken
+
+  Mobile_Van_Number_Change
+  Mobile_Van_Number_Broken
+
+  Email_Address_Change
+  Email_Address_Broken
+
+  Door_To_Door_Delivery_Official_Number_Change
+  Door_To_Door_Delivery_Official_Number_Broken
+
+  Inaccessible
+  Inaccurate_Information
+
+  Discontinued
+}
+
+type _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Update_ {
+  id: ID!
+
+  version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_ @hasInverse(field: "updates")
+
+  previous_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_ @hasInverse(field: "next_version")
+  next_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_ @hasInverse(field: "previous_version")
+
+  description: String
+
+  change_type: _Change_Type_ @search(by: [exact])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# service delivery node instance versions that were active at a given point in time
+# for example, all police stations in a state at a given point in time.
+type _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Group_ {
+  id: ID!
+
+  name_id: String @search(by: [exact])
+
+  # The date and time this version group became active
+  established_on: _Date_Time_
+
+  # All active service delivery node versions at this point in time
+  delivery_node_versions: [_Indian_Union_Government_Service_Delivery_Node_Instance_Version_]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# service to delivery node relationship version type to track temporal relationships
+type _Service_To_Delivery_Node_Relationship_ {
+  id: ID!
+
+  service: _Indian_Union_Government_Service_
+  delivery_node_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_
+
+  relationship_type: String
+  valid_from: _Date_Time_
+  valid_until: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
