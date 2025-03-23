@@ -1,0 +1,49 @@
+type _Indian_Union_Government_Ministry_Program_ {
+  # ministry policy to implmentation plans and budget
+  # 
+}
+
+type _Indian_Union_Government_Ministry_Program_Department_ {
+  # how a program is connected to ministry and department in that ministry
+}
+
+type _Indian_Union_Government_Service_Delivery_Node_ {
+  # category of delivers services.
+  # not an instance, but a type. e.g. District NCD Clinics is a _Indian_Union_Government_Service_Delivery_Node_
+  # aims to provide benefits as per the specific programme its part of
+  id: ID!
+  # name_id: @id
+}
+
+type _Indian_Union_Government_Service_Delivery_Node_Instance_ {
+  # service delivery node instance
+  # e.g. District NCD Clinics IN CERTAIN DISTRICT OF CERTAIN COUNTRY 
+  # is a _Indian_Union_Government_Service_Delivery_Node_
+  # it has a location if its physical
+  # it can be digital, e.g. some website or web application, although it may have a back office
+}
+
+type _Indian_Union_Government_Service_ {
+  # what services are delivered via this node?
+}
+
+type _Indian_Union_Government_Service_Benefits_ {
+  # what are the end goal of those services?
+  # are they targetting individual citizen or community of citizens (group of citizens)
+  # what problem does this benefit resolve?
+  # target individual profile
+  # target community profile
+}
+
+type _Policy_Domain_Objectives_ {
+  # problems of citizens or citizen groups
+}
+
+type _Citizen_Group_ {
+  # group of citizen that have their own set of unique problems and issues
+}
+
+type _Citizen_Life_Cycle_Stage_ {
+  # e.g. age groups, infancy, pregnency, hospitalization etc.
+}
+
