@@ -1,0 +1,66 @@
+enum _Indian_Union_Government_Policy_Document_Type_ {
+  Policy_Framework
+  Strategy_Document
+  Action_Plan
+  Guidelines
+  Circular
+  Notification
+  Memorandum
+  Resolution
+  White_Paper
+  Vision_Document
+  Five_Year_Plan
+  Annual_Plan
+}
+
+# enum _Indian_Union_Government_Policy_Document_Status_ {
+#   Draft
+#   Under_Review
+#   Approved
+#   Implemented
+#   Superseded
+#   Archived
+# }
+
+# A government policy document that addresses policy objectives
+type _Indian_Union_Government_Policy_Document_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+
+  names: [_Name_] @hasInverse(field: "indian_union_government_policy_documents")
+
+  description: String
+
+  # Document type
+  document_type: _Indian_Union_Government_Policy_Document_Type_ @search(by: [exact])
+
+  # Issuing authority
+  issuing_ministry: _Indian_Union_Government_Ministry_
+  issuing_department: _Indian_Union_Government_Department_
+
+  # Policy objectives addressed by this document
+  addresses_objectives: [_Policy_Domain_Objectives_] @hasInverse(field: "addressed_by_policy_documents")
+
+  # Document timeline
+  published_on: _Date_Time_
+  effective_from: _Date_Time_
+  effective_until: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+
+  # TODO applicable region profile. can have multiple regions, can have attribute based regions
+  #  can have multiple tiers of applicability. e.g. MMR focus states and low focus states.
+
+  # Document status
+  # status: _Indian_Union_Government_Policy_Document_Status_ @search(by: [exact])
+
+  # issuing_state_government: _Indian_State_Government_
+
+  # Programs derived from this policy document
+  # derived_programs: [_Indian_Union_Government_Ministry_Program_] @hasInverse(field: "source_policy_documents")
+
+  # Regional applicability
+  # is_national: Boolean
+}
