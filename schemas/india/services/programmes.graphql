@@ -33,6 +33,9 @@ type _Indian_Union_Government_Ministry_Program_ {
   # Policy domains this program addresses
   policy_domains: [_Public_Policy_Domain_]
 
+  # Policy documents this program is derived from
+  source_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "derived_programs")
+
   # Services offered under this program
   services: [_Indian_Union_Government_Service_] @hasInverse(field: "program")
 

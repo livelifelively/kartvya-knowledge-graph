@@ -9,6 +9,15 @@ type _Indian_Administrative_Divisions {
   districts: [_Indian_District_]
 }
 
+enum _Indian_Region_Type_ {
+  State
+  Union_Territory
+  District
+  Zonal_Council
+  Vidhansabha_Constituency
+  Loksabha_Constituency
+}
+
 # SINGLE_NODE_TYPE
 # DIRECTORY_NODE_TYPE
 # one node for India
@@ -43,4 +52,3 @@ enum _Indian_Legislative_Constituency_Reservation_ {
   SANGHA
   BL
 }
-
