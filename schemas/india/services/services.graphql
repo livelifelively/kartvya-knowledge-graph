@@ -269,13 +269,14 @@ type _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Group_ {
 }
 
 # service to delivery node relationship version type to track temporal relationships
-type _Service_To_Delivery_Node_Relationship_ {
+type _Indian_Union_Government_Service_To_Delivery_Node_Relationship_ {
   id: ID!
 
   service: _Indian_Union_Government_Service_
   delivery_node_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_
 
-  relationship_type: String
+  # relationship_type: String @search(by: [exact])
+
   valid_from: _Date_Time_
   valid_until: _Date_Time_
 
