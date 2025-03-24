@@ -1,0 +1,64 @@
+type _Indian_Union_Government_Policy_Domain_Objective_ {
+  id: ID!
+
+  # e.g. reduce MMR
+  names: [_Name_] @hasInverse(field: "indian_union_government_policy_domain_objectives")
+
+  # make it searchable
+  description: String
+
+  # Policy domain this objective belongs to
+  policy_domain: _Public_Policy_Domain_ @hasInverse(field: "objectives")
+
+  # Versions of this objective (for tracking changes in definition)
+  versions: [_Policy_Domain_Objective_Version_] @hasInverse(field: "objective")
+
+  # Active version of this objective
+  active_version: _Policy_Domain_Objective_Version_
+
+  # TODO: link with metrics - real and target corresponding to current status and objective respectively.
+  # Metrics to measure progress on this objective
+  # success_indicators: [String]
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Versions of a policy domain objective
+# For tracking how objective definitions change over time
+# e.g. reduce MMR to below 50 by 2010 (version 1)
+# e.g. reduce MMR to below 40 by 2020 (version 2)
+type _Policy_Domain_Objective_Version_ {
+  id: ID!
+
+  objective: _Indian_Union_Government_Policy_Domain_Objective_ @hasInverse(field: "versions")
+
+  # Objective definition for this version
+  definition: String
+
+  # Previous and next versions for tracking history
+  previous_version: _Policy_Domain_Objective_Version_
+  successor_version: _Policy_Domain_Objective_Version_
+
+  # Policy documents that address this objective
+  addressed_by_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "addresses_objectives")
+
+  # Active Services and Benefits that address this objective
+  addressed_by_services: [_Indian_Union_Government_Service_] @hasInverse(field: "addresses_policy_objectives")
+  addressed_by_benefits: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "addresses_policy_objectives")
+
+  # Citizen groups affected by this problem (using attribute-based approach)
+  citizen_attributes: [_Citizen_Attribute_Category_] @hasInverse(field: "policy_objectives")
+  citizen_group_attributes: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "policy_objectives")
+
+  # objective adopted by ministries and departments for any version till date.
+  ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "policy_domain_objectives")
+  departments: [_Indian_Union_Government_Department_] @hasInverse(field: "policy_domain_objectives")
+
+  # Time period this definition was active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
