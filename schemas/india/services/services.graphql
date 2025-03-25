@@ -40,6 +40,9 @@ type _Indian_Union_Government_Service_ {
   # Nodes that deliver this service
   delivery_nodes: [_Indian_Union_Government_Service_Delivery_Node_] @hasInverse(field: "services")
 
+  # Benefits provided by this service
+  benefits: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "services")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 
@@ -49,9 +52,6 @@ type _Indian_Union_Government_Service_ {
 
   # Legal basis for this service
   # legal_basis: [_Indian_Legal_Document_]
-
-  # Benefits provided by this service
-  benefits: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "services")
 
   # Eligibility criteria for this service
   # eligibility_criteria: [_Indian_Union_Government_Service_Eligibility_] @hasInverse(field: "service")
@@ -87,6 +87,9 @@ type _Indian_Union_Government_Service_Benefit_ {
   # Complex eligibility rules for this benefit
   eligibility_rules: [_Indian_Union_Government_Service_Benefit_Eligibility_Rule_] @hasInverse(field: "benefit")
 
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+
   # What problem does this benefit address?
   # addresses_policy_objectives: [_Policy_Domain_Objectives_] @hasInverse(field: "addressed_by_benefits")
 
@@ -94,9 +97,6 @@ type _Indian_Union_Government_Service_Benefit_ {
   # benefit_type: String # financial, healthcare, education, etc.
   # benefit_value: String # monetary value or description
   # benefit_duration: String
-
-  node_created_on: DateTime
-  node_updates: [_Node_Update_]
 }
 
 enum _Service_Delivery_Node_Type_ {
