@@ -1,4 +1,3 @@
-
 # DIRECTORY_NODE_TYPE
 # One node for every loksabha constituency
 # has multiple versions for different state of administrative structures at different times
@@ -48,6 +47,9 @@ type _Indian_Loksabha_Constituency_Reorganisation_ {
   loksabha_constituencies: [_Indian_Loksabha_Constituency_] @hasInverse(field: "reorganisations")
   # new versions of loksabha constituencies
   loksabha_constituency_versions: [_Indian_Loksabha_Constituency_Version_] @hasInverse(field: "reorganisation")
+
+  historical_event: _Indian_Event_Administrative_Region_Reorganisation_
+    @hasInverse(field: "loksabha_constituency_reorganisations")
 
   reorganised_on: _Date_Time_
 }

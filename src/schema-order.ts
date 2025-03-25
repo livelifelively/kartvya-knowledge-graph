@@ -97,7 +97,8 @@ export const schemaOrder: SchemaOrderConfig = [
       {
         name: "events",
         files: [
-          "events.administrative-regions.graphql"
+          "events.administrative-regions.graphql",
+          "events.programs.graphql"
         ]
       }
     ]

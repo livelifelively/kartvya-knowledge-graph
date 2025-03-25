@@ -48,6 +48,9 @@ type _Indian_Vidhansabha_Constituency_Reorganisation_ {
   # new versions of vidhansabha constituencies
   vidhansabha_constituency_versions: [_Indian_Vidhansabha_Constituency_Version_] @hasInverse(field: "reorganisation")
 
+  historical_event: _Indian_Event_Administrative_Region_Reorganisation_
+    @hasInverse(field: "vidhansabha_constituency_reorganisations")
+
   reorganised_on: _Date_Time_
 }
 

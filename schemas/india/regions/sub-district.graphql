@@ -1,5 +1,5 @@
 type _Indian_Sub_District_ {
-  id: ID
+  id: ID!
 
   name_id: String! @id @search(by: [exact, term, fulltext])
   names: [_Name_] @hasInverse(field: "indian_sub_district")
@@ -33,6 +33,9 @@ type _Indian_Sub_District_Reorganisation_ {
   sub_districts: [_Indian_Sub_District_] @hasInverse(field: "reorganisations")
   # new versions of districts
   sub_district_versions: [_Indian_Sub_District_Version_] @hasInverse(field: "reorganisation")
+
+  historical_event: _Indian_Event_Administrative_Region_Reorganisation_
+    @hasInverse(field: "sub_district_reorganisations")
 
   reorganised_on: _Date_Time_
 }

@@ -38,6 +38,19 @@ type _Data_Value_ {
   categorical_value: String
 }
 
+# type _Data_Value_Indian_State_Union_Territory_ {
+#   id: ID!
+
+#   data_value: _Data_Value_!
+
+#   datetime_from: _Date_Time_
+#   datetime_to: _Date_Time_
+
+#   # source: []
+
+#   state_or_union_territory: _Indian_State_Union_Territory_!
+# }
+
 # type _Admin_Region_Data_Time_Range {
 #   id: ID!
 

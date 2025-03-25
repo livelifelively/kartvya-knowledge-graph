@@ -35,7 +35,11 @@ type _Citizen_Attribute_Category_ {
   # How frequently does this attribute typically change?
   typical_change_frequency: _Citizen_Attribute_Category_Typical_Change_Frequency_ @search(by: [exact])
 
-  # Benefits targeting citizens with this attribute
+  # Policy objectives that affect citizens with this attribute
+  policy_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
+    @hasInverse(field: "citizen_attributes")
+
+  # Benefits that target citizens with this attribute
   targeted_by_benefits: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "target_citizen_attributes")
 
   # Versions of this attribute category (for tracking changes in definition)

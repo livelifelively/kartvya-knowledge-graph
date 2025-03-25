@@ -1,5 +1,5 @@
 type _Citizen_Profile_ {
-  id: ID
+  id: ID!
 
   user: User @hasInverse(field: "citizen_profile")
 

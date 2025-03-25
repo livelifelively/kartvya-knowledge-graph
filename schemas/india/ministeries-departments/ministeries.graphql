@@ -19,17 +19,25 @@ type _Indian_Union_Government_Ministry_ {
   policy_domain_ministries_list: [_Public_Policy_Domain_Government_Ministries_Departments_]
     @hasInverse(field: "indian_union_government_ministries")
 
+  # Policy domain objectives adopted by this ministry
+  policy_domain_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
+    @hasInverse(field: "ministries")
+
+  # Programs owned by this ministry
+  programs: [_Indian_Union_Government_Ministry_Program_] @hasInverse(field: "owner_ministry")
+
+  # Departments under this ministry
+  departments: [_Indian_Union_Government_Department_] @hasInverse(field: "ministry")
+
   union_government: _Indian_Union_Government_ @hasInverse(field: "ministries")
+  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "ministries")
 
   minister: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "ministry")
   minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
     @hasInverse(field: "ministry")
   minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "ministry")
 
-  cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "ministries")
   prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "ministries")
-
-  departments: [_Indian_Union_Government_Department_] @hasInverse(field: "ministry")
 
   wikidata_qid: String @search(by: [hash])
   wikipedia_page: String @search(by: [fulltext])
@@ -58,11 +66,18 @@ type _Indian_Union_Government_Department_ {
   policy_domain_departments_list: [_Public_Policy_Domain_Government_Ministries_Departments_]
     @hasInverse(field: "indian_union_government_departments")
 
+  # Policy domain objectives adopted by this department
+  policy_domain_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
+    @hasInverse(field: "departments")
+
   union_government: _Indian_Union_Government_ @hasInverse(field: "departments")
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "departments")
 
   parent_department: [_Indian_Union_Government_Department_] @hasInverse(field: "child_departments")
   child_departments: [_Indian_Union_Government_Department_] @hasInverse(field: "parent_department")
+
+  program_implementations: [_Indian_Union_Government_Ministry_Program_Version_Department_]
+    @hasInverse(field: "department")
 
   established_on: _Date_Time_
   disestablished_on: _Date_Time_

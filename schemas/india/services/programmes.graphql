@@ -85,7 +85,7 @@ type _Indian_Union_Government_Ministry_Program_Version_Group_ {
   established_on: _Date_Time_
   disestablished_on: _Date_Time_
 
-  versions: [_Indian_Union_Government_Ministry_Program_Version_] @hasInverse(field: "self")
+  versions: [_Indian_Union_Government_Ministry_Program_Version_]
 
   # Audit fields
   node_created_on: DateTime

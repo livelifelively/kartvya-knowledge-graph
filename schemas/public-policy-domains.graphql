@@ -28,6 +28,9 @@ type _Public_Policy_Domain_ {
   government_ministries_departments: _Public_Policy_Domain_Government_Ministries_Departments_
     @hasInverse(field: "public_policy_domain")
 
+  # Policy domain objectives that belong to this domain
+  policy_domain_objectives: [_Indian_Union_Government_Policy_Domain_Objective_] @hasInverse(field: "policy_domain")
+
   citizen_followers: [_Citizen_Profile_] @hasInverse(field: "policy_domains")
 
   node_created_on: DateTime

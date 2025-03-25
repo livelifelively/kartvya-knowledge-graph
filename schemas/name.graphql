@@ -79,6 +79,31 @@ type _Name_ {
 
   indian_legal_document: [_Indian_Legal_Document_] @hasInverse(field: "names")
 
+  indian_union_government_service: [_Indian_Union_Government_Service_] @hasInverse(field: "names")
+  indian_union_government_service_benefit: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "names")
+  indian_union_government_service_delivery_node: [_Indian_Union_Government_Service_Delivery_Node_]
+    @hasInverse(field: "names")
+  indian_union_government_service_delivery_node_instance: [_Indian_Union_Government_Service_Delivery_Node_Instance_]
+    @hasInverse(field: "names")
+  indian_union_government_service_delivery_node_instance_version: [_Indian_Union_Government_Service_Delivery_Node_Instance_Version_]
+    @hasInverse(field: "names")
+
+  indian_union_government_ministry_program: [_Indian_Union_Government_Ministry_Program_] @hasInverse(field: "names")
+
+  indian_union_government_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "names")
+
+  indian_union_government_policy_domain_objectives: [_Indian_Union_Government_Policy_Domain_Objective_]
+    @hasInverse(field: "names")
+
+  indian_administrative_region_reorganisation_event: [_Indian_Event_Administrative_Region_Reorganisation_]
+    @hasInverse(field: "names")
+
+  indian_ministry_program_reorganisation_event: [_Indian_Event_Ministry_Program_Reorganisation_]
+    @hasInverse(field: "names")
+
+  citizen_attribute_categories: [_Citizen_Attribute_Category_] @hasInverse(field: "names")
+  citizen_group_attribute_categories: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "names")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }

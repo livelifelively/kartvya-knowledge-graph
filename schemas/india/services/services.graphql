@@ -43,6 +43,10 @@ type _Indian_Union_Government_Service_ {
   # Benefits provided by this service
   benefits: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "services")
 
+  # Policy objectives addressed by this service
+  addresses_policy_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
+    @hasInverse(field: "addressed_by_services")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 
@@ -68,7 +72,7 @@ type _Indian_Union_Government_Service_Benefit_ {
   # what are the end goals of those services?
   id: ID!
 
-  names: [_Name_] @hasInverse(field: "indian_union_government_service_benefits")
+  names: [_Name_] @hasInverse(field: "indian_union_government_service_benefit")
 
   description: String
 
@@ -86,6 +90,10 @@ type _Indian_Union_Government_Service_Benefit_ {
 
   # Complex eligibility rules for this benefit
   eligibility_rules: [_Indian_Union_Government_Service_Benefit_Eligibility_Rule_] @hasInverse(field: "benefit")
+
+  # What policy objectives this benefit addresses
+  addresses_policy_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
+    @hasInverse(field: "addressed_by_benefits")
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]
@@ -149,6 +157,8 @@ type _Indian_Union_Government_Service_Delivery_Node_Instance_ {
 
   description: String
 
+  node_type: _Indian_Union_Government_Service_Delivery_Node_ @hasInverse(field: "instances")
+
   versions: [_Indian_Union_Government_Service_Delivery_Node_Instance_Version_] @hasInverse(field: "self")
 
   active_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_
@@ -189,7 +199,13 @@ type _Indian_Union_Government_Service_Delivery_Node_Instance_Version_ {
   # if the node is an email
   email_address: String
 
-  update: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Update_ @hasInverse(field: "version")
+  updates: [_Indian_Union_Government_Service_Delivery_Node_Instance_Version_Update_] @hasInverse(field: "version")
+
+  # Add the missing inverse fields for previous_version and next_version
+  previous_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Update_
+    @hasInverse(field: "next_version")
+  next_version: _Indian_Union_Government_Service_Delivery_Node_Instance_Version_Update_
+    @hasInverse(field: "previous_version")
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]

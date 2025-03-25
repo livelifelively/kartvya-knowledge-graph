@@ -2,7 +2,7 @@
 # values in camelcase are due to @auth/core adapter type definition
 
 type Account {
-  id: ID
+  id: ID!
 
   type: String
   provider: String @search(by: [hash])
@@ -20,7 +20,7 @@ type Account {
 }
 
 type Session {
-  id: ID
+  id: ID!
 
   expires: DateTime
   sessionToken: String @search(by: [hash])
@@ -28,7 +28,7 @@ type Session {
 }
 
 type User {
-  id: ID
+  id: ID!
 
   name: String
   email: String @id
@@ -40,10 +40,9 @@ type User {
 }
 
 type VerificationToken {
-  id: ID
+  id: ID!
 
   identifier: String @search(by: [hash])
   token: String @search(by: [hash])
   expires: DateTime
 }
-

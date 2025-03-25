@@ -45,6 +45,9 @@ type _Indian_State_Union_Territory_Reorganisation_ {
   # new versions of state_or_union_territory
   state_or_union_territory_versions: [_Indian_State_Union_Territory_Version_] @hasInverse(field: "reorganisation")
 
+  historical_event: _Indian_Event_Administrative_Region_Reorganisation_
+    @hasInverse(field: "state_union_territory_reorganisations")
+
   reorganised_on: _Date_Time_
 }
 
