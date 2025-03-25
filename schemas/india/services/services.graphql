@@ -51,7 +51,7 @@ type _Indian_Union_Government_Service_ {
   # legal_basis: [_Indian_Legal_Document_]
 
   # Benefits provided by this service
-  benefits: [_Indian_Union_Government_Service_Benefits_] @hasInverse(field: "services")
+  benefits: [_Indian_Union_Government_Service_Benefit_] @hasInverse(field: "services")
 
   # Eligibility criteria for this service
   # eligibility_criteria: [_Indian_Union_Government_Service_Eligibility_] @hasInverse(field: "service")
@@ -64,7 +64,7 @@ type _Indian_Union_Government_Service_ {
 }
 
 # Benefits provided by this service to specific beneficiary type
-type _Indian_Union_Government_Service_Benefits_ {
+type _Indian_Union_Government_Service_Benefit_ {
   # what are the end goals of those services?
   id: ID!
 

@@ -36,8 +36,10 @@ type _Citizen_Group_Attribute_Category_ {
   typical_change_frequency: _Citizen_Group_Attribute_Typical_Change_Frequency_ @search(by: [exact])
 
   # Benefits targeting groups with this attribute
-  targeted_by_benefits: [_Indian_Union_Government_Service_Benefits_]
+  targeted_by_benefits: [_Indian_Union_Government_Service_Benefit_]
     @hasInverse(field: "target_citizen_group_attributes")
+
+  # policy_objectives: [_Policy_Domain_Objective_Version_] @hasInverse(field: "citizen_group_attributes")
 
   # Versions of this group attribute (for tracking changes in definition)
   versions: [_Citizen_Group_Attribute_Category_Version_] @hasInverse(field: "attribute_category")
