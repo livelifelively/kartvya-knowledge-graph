@@ -59,7 +59,28 @@ export const schemaOrder: SchemaOrderConfig = [
         name: "ministeries-departments",
         files: [
           "ministeries.graphql",
-          "health.graphql"
+          "health.graphql",
+          "policy-domains-objectives.graphql"
+        ]
+      },
+      {
+        name: "citizens",
+        files: [
+          "citizen-attributes.graphql",
+          "citizen-groups-attributes.graphql"
+        ]
+      },
+      {
+        name: "services",
+        files: [
+          "services.graphql",
+          "programmes.graphql"
+        ]
+      },
+      {
+        name: "policy",
+        files: [
+          "government-policy-documents.graphql"
         ]
       },
       {
@@ -71,6 +92,12 @@ export const schemaOrder: SchemaOrderConfig = [
           "loksabha-constituency.graphql",
           "vidhansabha-constituency.graphql",
           "sub-district.graphql",
+        ]
+      },
+      {
+        name: "events",
+        files: [
+          "events.administrative-regions.graphql"
         ]
       }
     ]
