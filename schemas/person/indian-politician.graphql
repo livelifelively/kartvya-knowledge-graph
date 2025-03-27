@@ -1,0 +1,173 @@
+# SINGLE_NODE_TYPE
+type _Indian_Politician_ {
+  id: ID!
+
+  # names: [_Name_!]! @hasInverse(field: "indian_politician")
+
+  political_party_memberships: [_Indian_Political_Party_Member_] @hasInverse(field: "politician")
+
+  person: _Person_ @hasInverse(field: "indian_politician")
+
+  # elections in which participated
+  loksabha_elections_contested: [_Indian_Loksabha_Constituency_Election_Candidate_] @hasInverse(field: "candidate")
+
+  # official positions held
+  loksabha_member: [_Indian_Loksabha_Member_] @hasInverse(field: "position_held_by")
+  # rajyasabha_member: [_Indian_Rajyasabha_Member_]
+  # vidhansabha_member: [_Indian_Vidhansabha_Member_]
+  prime_minister: [_Indian_Prime_Minister_] @hasInverse(field: "position_held_by")
+  cabinet_minister: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "position_held_by")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "position_held_by")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "position_held_by")
+
+  # Temporal fields
+  versions: [_Indian_Politician_Version_] @hasInverse(field: "self")
+  transitions: [_Indian_Politician_Transition_] @hasInverse(field: "politicians")
+  active_version: _Indian_Politician_Version_
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Version of a politician at a specific point in time
+type _Indian_Politician_Version_ {
+  id: ID!
+
+  self: _Indian_Politician_ @hasInverse(field: "versions")
+
+  transition: _Indian_Politician_Transition_ @hasInverse(field: "politician_versions")
+
+  change: _Indian_Division_Version_Change_ @search
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Records changes to politician information
+type _Indian_Politician_Transition_ {
+  id: ID!
+
+  names: [_Name_] @hasInverse(field: "indian_politician_transition")
+
+  politicians: [_Indian_Politician_] @hasInverse(field: "transitions")
+  politician_versions: [_Indian_Politician_Version_] @hasInverse(field: "transition")
+
+  # Link to the historical event that caused this transition
+  historical_event: _Indian_Event_Politician_Transition_ @hasInverse(field: "politician_transitions")
+
+  transition_date: _Date_Time_
+  transition_type: _Indian_Politician_Transition_Type_ @search
+  transition_description: String
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Events related to politician transitions in India
+type _Indian_Event_Politician_Transition_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_politician_transition_event")
+
+  description: String
+
+  # Event metadata
+  event_date: _Date_Time_
+  event_type: _Indian_Politician_Transition_Type_ @search(by: [exact])
+  event_category: _Indian_Politician_Transition_Category_ @search(by: [exact])
+
+  # Official documents and references
+  official_document_reference: String @search(by: [fulltext])
+  official_document_url: String
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  # Relationships to transitions
+  politician_transitions: [_Indian_Politician_Transition_] @hasInverse(field: "historical_event")
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Enum for detailed politician transition types
+enum _Indian_Politician_Transition_Type_ {
+  # Party-related transitions
+  Party_Membership_Joined
+  Party_Membership_Left
+  Party_Membership_Expelled
+  Party_Membership_Suspended
+  Party_Position_Appointed
+  Party_Position_Removed
+  Party_Position_Resigned
+
+  # Government-related transitions
+  Government_Position_Appointed
+  Government_Position_Removed
+  Government_Position_Resigned
+  Government_Ministry_Assigned
+  Government_Ministry_Removed
+  Government_Ministry_Reshuffled
+  Government_Cabinet_Inducted
+  Government_Cabinet_Removed
+
+  # Election-related transitions
+  Election_Candidature_Declared
+  Election_Candidature_Withdrawn
+  Election_Result_Won
+  Election_Result_Lost
+  Election_Constituency_Changed
+
+  # Legal-related transitions
+  Legal_Status_Suspended
+  Legal_Status_Reinstated
+  Legal_Status_Disqualified
+  Legal_Status_Convicted
+  Legal_Status_Acquitted
+
+  # Personal transitions
+  Personal_Status_Retired
+  Personal_Status_Deceased
+  Personal_Status_HealthLeave
+
+  # Other
+  Other_Transition
+}
+
+# Enum for categorizing politician transition events
+enum _Indian_Politician_Transition_Category_ {
+  Party_Related # Changes related to political party membership
+  Government_Related # Changes related to government positions
+  Election_Related # Changes related to election outcomes
+  Legal_Related # Changes related to legal status (suspension, disqualification)
+  Personal # Personal decisions (retirement, health-related)
+  Other # Miscellaneous changes
+}
+
+# Active versions of all politicians at a point in time
+# Simplifies queries to access all active politician versions at a specific time
+type _Indian_Politician_Version_Group_ {
+  id: ID!
+
+  # name_id: String @search(by: [exact])
+  description: String
+
+  # The date and time this version group became active
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  # Not bidirectional
+  politicians: [_Indian_Politician_Version_]
+
+  # Audit fields
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

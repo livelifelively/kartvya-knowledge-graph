@@ -1,0 +1,18 @@
+type _Person_ {
+  id: ID!
+
+  names: [_Name_] @hasInverse(field: "person")
+
+  born: _Date_Time_
+  died: _Date_Time_
+
+  # Should not be separate wikipedia node.
+  # 1:1 relationship. Will be another high fanout node.
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  indian_politician: _Indian_Politician_ @hasInverse(field: "person")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}

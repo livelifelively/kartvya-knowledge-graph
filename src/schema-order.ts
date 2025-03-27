@@ -21,6 +21,13 @@ export const schemaOrder: SchemaOrderConfig = [
   "language.graphql",
   "name.graphql",
   "person.graphql",
+  {
+    name: "person",
+    files: [
+      "person.graphql",
+      "indian-politician.graphql"
+    ]
+  },
   
   // Data source related schemas
   "sources.graphql",
