@@ -1,0 +1,25 @@
+# SINGLE_NODE_TYPE
+type _Indian_Executive_Official_ {
+  id: ID!
+
+  # Link to base person entity
+  person: _Person_ @hasInverse(field: "indian_executive_official")
+
+  # Official positions held
+  # TODO: Add specific position types as they are defined
+  # ias_officer: [_Indian_IAS_Officer_]
+  # ips_officer: [_Indian_IPS_Officer_]
+  # rbi_governor: [_Indian_RBI_Governor_]
+  # election_commissioner: [_Indian_Election_Commissioner_]
+
+  # Temporal fields - similar to politician model
+  versions: [_Indian_Executive_Official_Version_] @hasInverse(field: "self")
+  transitions: [_Indian_Executive_Official_Transition_] @hasInverse(field: "officials")
+  active_version: _Indian_Executive_Official_Version_
+
+  established_on: _Date_Time_
+  disestablished_on: _Date_Time_
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+} 

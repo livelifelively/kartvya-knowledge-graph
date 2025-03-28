@@ -116,27 +116,10 @@ type _Indian_Prime_Minister_ {
   node_updates: [_Node_Update_]
 }
 
-type _Indian_Union_Council_Of_Ministers_ {
-  id: ID!
-
-  loksabha: _Indian_Loksabha_ @hasInverse(field: "council_of_ministers")
-
-  prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "council_of_ministers")
-  government: _Indian_Union_Government_ @hasInverse(field: "council_of_ministers")
-
-  council_member_ministers: _Indian_Union_Government_Cabinet_Minister_ @hasInverse(field: "council_of_ministers")
-
-  # TODO there has to be a way where all these values of date time are controlled from one node
-  tenure_start: _Date_Time_
-  tenure_end: _Date_Time_
-
-  node_created_on: DateTime
-  node_updates: [_Node_Update_]
-}
-
-# CAN_BE_VERSIONS?
+# CAN_BE_VERSIONS? - this is temporal. so dont need versions.
 # CREATE_NEW:
-# whenever any change made to the cabinet. even a single change.
+# whenever any change made to the cabinet. even a single change. does what versioning is for.
+# same as council of ministers.
 type _Indian_Union_Government_Cabinet_ {
   id: ID!
 
