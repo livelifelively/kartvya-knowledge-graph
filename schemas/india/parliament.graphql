@@ -57,7 +57,7 @@ type _Indian_Loksabha_Member_ {
   constituency: _Indian_Loksabha_Constituency_ @hasInverse(field: "loksabha_members")
   election: _Indian_Loksabha_Constituency_Election_ @hasInverse(field: "election_winner")
 
-  position_held_by: _Indian_Politician_ @hasInverse(field: "loksabha_member")
+  position_held_by: _Indian_Politician_Version_ @hasInverse(field: "loksabha_member")
   election_winning_political_party: _Indian_Political_Party_Loksabha_Election_ @hasInverse(field: "loksabha_members")
 
   tenure_start: _Date_Time_

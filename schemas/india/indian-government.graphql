@@ -99,7 +99,7 @@ type _Indian_Union_Government_ {
 type _Indian_Prime_Minister_ {
   id: ID!
 
-  position_held_by: _Indian_Politician_ @hasInverse(field: "prime_minister")
+  position_held_by: _Indian_Politician_Version_ @hasInverse(field: "prime_minister")
 
   # during tenure
   government: [_Indian_Union_Government_] @hasInverse(field: "prime_minister")
@@ -172,7 +172,7 @@ type _Indian_Union_Government_Cabinet_Minister_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  position_held_by: _Indian_Politician_ @hasInverse(field: "cabinet_minister")
+  position_held_by: _Indian_Politician_Version_ @hasInverse(field: "cabinet_minister")
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister")
 
   council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "council_member_ministers")
@@ -197,7 +197,7 @@ type _Indian_Union_Government_Minister_Of_State_Independent_Charge_ {
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state_independent_charge")
 
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister_of_state_independent_charge")
-  position_held_by: _Indian_Politician_ @hasInverse(field: "minister_of_state_independent_charge")
+  position_held_by: _Indian_Politician_Version_ @hasInverse(field: "minister_of_state_independent_charge")
 
   tenure_start: _Date_Time_
   tenure_end: _Date_Time_
@@ -218,7 +218,7 @@ type _Indian_Union_Government_Minister_Of_State_ {
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state")
 
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister_of_state")
-  position_held_by: _Indian_Politician_ @hasInverse(field: "minister_of_state")
+  position_held_by: _Indian_Politician_Version_ @hasInverse(field: "minister_of_state")
 
   tenure_start: _Date_Time_
   tenure_end: _Date_Time_
@@ -226,4 +226,3 @@ type _Indian_Union_Government_Minister_Of_State_ {
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }
-

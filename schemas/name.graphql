@@ -104,6 +104,8 @@ type _Name_ {
   citizen_attribute_categories: [_Citizen_Attribute_Category_] @hasInverse(field: "names")
   citizen_group_attribute_categories: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "names")
 
+  indian_politician_transition_event: [_Indian_Event_Politician_Transition_] @hasInverse(field: "names")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }
