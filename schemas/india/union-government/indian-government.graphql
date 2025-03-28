@@ -46,23 +46,32 @@ enum _Government_Branches_ {
   Judiciary
 }
 
-# DOUBTFUL
 # across all branches i.e. legislative, executive, judiciary
 # across all government levels i.e. Union, State, Municipality
-type _Indian_Government_Official_Role_ {
+type _Indian_Union_Government_Official_Role_ {
   id: ID!
-  name_id: String! @id @search(by: [exact, term, fulltext])
 
-  names: [_Name_] @hasInverse(field: "indian_government_official_role")
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_union_government_official_role")
+
+  # description of the role.
   description: String
 
   # link to the role_based_types nodes
-  loksabha_members: [_Indian_Loksabha_Member_]
+  prime_ministers: [_Indian_Prime_Minister_] @hasInverse(field: "indian_union_government_official_role")
+  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "indian_union_government_official_role")
+  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_]
+    @hasInverse(field: "indian_union_government_official_role")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_]
+    @hasInverse(field: "indian_union_government_official_role")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "indian_union_government_official_role")
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }
 
+# kind of like a version group of the union government
 # CREATE_NEW:
 # 1. whenever the PM changes;
 # 2. whenever loksabha changes
@@ -71,7 +80,7 @@ type _Indian_Union_Government_ {
 
   prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "government")
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "government")
-  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "government")
+  # council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "government")
   # TODO should have active members. we may need versions for cabinet_ministers
   # cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "government")
 
@@ -99,12 +108,13 @@ type _Indian_Union_Government_ {
 type _Indian_Prime_Minister_ {
   id: ID!
 
+  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "prime_ministers")
   position_held_by: _Indian_Politician_Version_ @hasInverse(field: "prime_minister")
 
   # during tenure
   government: [_Indian_Union_Government_] @hasInverse(field: "prime_minister")
   loksabha: _Indian_Loksabha_ @hasInverse(field: "prime_minister")
-  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "prime_minister")
+  # council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "prime_minister")
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "prime_minister")
 
   ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "prime_minister")
@@ -155,10 +165,12 @@ type _Indian_Union_Government_Cabinet_Minister_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
+  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "cabinet_ministers")
+
   position_held_by: _Indian_Politician_Version_ @hasInverse(field: "cabinet_minister")
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister")
 
-  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "council_member_ministers")
+  # council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "council_member_ministers")
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "cabinet_ministers")
 
   tenure_start: _Date_Time_
@@ -176,6 +188,9 @@ type _Indian_Union_Government_Minister_Of_State_Independent_Charge_ {
   # loksabha: _Indian_Loksabha_
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
+
+  indian_union_government_official_role: _Indian_Union_Government_Official_Role_
+    @hasInverse(field: "minister_of_state_independent_charge")
 
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state_independent_charge")
 
@@ -197,6 +212,8 @@ type _Indian_Union_Government_Minister_Of_State_ {
   # loksabha: _Indian_Loksabha_
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
+
+  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "minister_of_state")
 
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state")
 

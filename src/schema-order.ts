@@ -53,7 +53,12 @@ export const schemaOrder: SchemaOrderConfig = [
   {
     name: "india",
     files: [
-      "indian-government.graphql",
+      {
+        name: "union-government",
+        files: [
+          "indian-government.graphql",
+        ]
+      },
       "parliament.graphql",
       {
         name: "elections",

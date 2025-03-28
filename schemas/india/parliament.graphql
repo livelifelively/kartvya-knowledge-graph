@@ -15,7 +15,7 @@ type _Indian_Loksabha_ {
 
   prime_minister: _Indian_Prime_Minister_ @hasInverse(field: "loksabha")
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "loksabha")
-  council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "loksabha")
+  # council_of_ministers: _Indian_Union_Council_Of_Ministers_ @hasInverse(field: "loksabha")
   union_government: _Indian_Union_Government_ @hasInverse(field: "loksabha")
 
   # sessions
@@ -50,6 +50,8 @@ type _Indian_Loksabha_Session_ {
 # when someone wins an election
 type _Indian_Loksabha_Member_ {
   id: ID!
+
+  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "loksabha_members")
 
   loksabha: _Indian_Loksabha_ @hasInverse(field: "members")
   constituency_election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "winner")

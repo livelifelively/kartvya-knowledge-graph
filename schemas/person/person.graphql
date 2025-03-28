@@ -12,7 +12,7 @@ type _Person_ {
   wikipedia_page: String @search(by: [fulltext])
 
   indian_politician: _Indian_Politician_ @hasInverse(field: "person")
-  indian_executive_official: _Indian_Executive_Official_ @hasInverse(field: "person")
+  # indian_executive_official: _Indian_Executive_Official_ @hasInverse(field: "person")
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]
