@@ -46,31 +46,6 @@ enum _Government_Branches_ {
   Judiciary
 }
 
-# across all branches i.e. legislative, executive, judiciary
-# across all government levels i.e. Union, State, Municipality
-type _Indian_Union_Government_Official_Role_ {
-  id: ID!
-
-  name_id: String! @id @search(by: [exact, term, fulltext])
-  names: [_Name_] @hasInverse(field: "indian_union_government_official_role")
-
-  # description of the role.
-  description: String
-
-  # link to the role_based_types nodes
-  prime_ministers: [_Indian_Prime_Minister_] @hasInverse(field: "indian_union_government_official_role")
-  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "indian_union_government_official_role")
-  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_]
-    @hasInverse(field: "indian_union_government_official_role")
-  minister_of_state: [_Indian_Union_Government_Minister_Of_State_]
-    @hasInverse(field: "indian_union_government_official_role")
-  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
-    @hasInverse(field: "indian_union_government_official_role")
-
-  node_created_on: DateTime
-  node_updates: [_Node_Update_]
-}
-
 # kind of like a version group of the union government
 # CREATE_NEW:
 # 1. whenever the PM changes;

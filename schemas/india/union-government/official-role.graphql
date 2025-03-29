@@ -1,0 +1,27 @@
+# across all branches i.e. legislative, executive, judiciary
+# focuses on the union government
+type _Indian_Union_Government_Official_Role_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_union_government_official_role")
+
+  role_branch: _Government_Branches_ @search(by: [exact])
+
+  # description of the role.
+  description: String
+
+  # link to the role_based_types nodes
+  prime_ministers: [_Indian_Prime_Minister_] @hasInverse(field: "indian_union_government_official_role")
+  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_]
+    @hasInverse(field: "indian_union_government_official_role")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_]
+    @hasInverse(field: "indian_union_government_official_role")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "indian_union_government_official_role")
+
+  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "indian_union_government_official_role")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
