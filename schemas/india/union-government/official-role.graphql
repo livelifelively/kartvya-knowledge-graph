@@ -1,3 +1,70 @@
+# Enum for classifying the primary functional category of the role
+enum _Role_Category_ {
+  Political_Leadership # e.g., PM, Minister
+  Senior_Bureaucracy # e.g., Secretary, Director General
+  Middle_Bureaucracy # e.g., Director, Under Secretary
+  Administrative_Support # e.g., Clerical staff (if modeled)
+  Legislative_Representative # e.g., MP
+  Judicial_Officer # e.g., Judge, Magistrate
+  Constitutional_Office # e.g., President, CAG, EC
+  Regulatory_Head # e.g., Head of SEBI, TRAI
+  Scheme_Delivery_Agent # General category for program workers
+  Community_Health_Mobilization # Specific category for roles like ASHA
+  Community_Education_Support # Specific category for roles like Anganwadi Worker
+  Law_Enforcement # e.g., IPS officers (if modeled at role level)
+  Military_Leadership # e.g., Chiefs of Staff (if modeled)
+  Other # Catch-all for roles not fitting above
+}
+
+# Enum for the primary operational level of the role
+enum _Role_Level_ {
+  National # Central government, nationwide scope
+  State # Primarily operating at State level (though could be Union Cadre)
+  District # District administration level
+  Block # Block/Tehsil level
+  Constituency # Specific to electoral constituencies (e.g., MP)
+  Community_Village # Grassroots level
+  Local_Body # Municipal/Panchayat level (if including these)
+  Institutional # Specific to a particular institution/organization
+  International # e.g., Ambassadors
+}
+
+# Enum for the nature of how the person assumes the role
+enum _Engagement_Type_ {
+  Elected # Through popular vote
+  Appointed_Political # Political appointments (e.g., Ministers, Governors)
+  Appointed_Bureaucratic # Through civil services exams/promotion (e.g., IAS, IFS)
+  Appointed_Judicial # Through judicial appointment process
+  Appointed_Constitutional # Specific appointment process for constitutional posts
+  Appointed_Contractual # Hired on a contract basis
+  Appointed_Incentive_Based # Designated and paid based on performance/tasks (e.g., ASHA)
+  Designated_Volunteer # Formally designated volunteer role
+  Deputation # Transferred from another service/dept
+  Nominated # e.g., some Rajya Sabha members
+}
+
+# Enum for the basis of remuneration for the role
+enum _Compensation_Basis_ {
+  Salary_Statutory_Scale # Following defined government pay scales
+  Salary_Consolidated # A fixed consolidated pay, not on a scale
+  Incentive_Based # Payment tied to specific completed tasks/targets
+  Honorarium # A nominal payment, not a full salary
+  Per_Diem # Payment based on days worked or attended
+  Volunteer_Unpaid # No direct monetary compensation (or expenses only)
+  Statutory_Emoluments # Specific pay/perks defined by law (e.g., President, MP)
+}
+
+# Enum for Government Branches (making it an Enum as well)
+enum _Government_Branches_ {
+  Legislative
+  Executive
+  Judiciary
+  Constitutional_Body # For independent bodies like EC, CAG
+  Regulatory_Body # For statutory regulatory bodies
+  Program_Implementation # For roles primarily executing specific schemes/programs
+  Quasi_Judicial
+}
+
 # across all branches i.e. legislative, executive, judiciary
 # focuses on the union government
 type _Indian_Union_Government_Official_Role_ {
@@ -6,7 +73,28 @@ type _Indian_Union_Government_Official_Role_ {
   name_id: String! @id @search(by: [exact, term, fulltext])
   names: [_Name_] @hasInverse(field: "indian_union_government_official_role")
 
-  role_branch: _Government_Branches_ @search(by: [exact])
+  role_branch: _Government_Branches_
+
+  role_category: _Role_Category_ @search(by: [exact])
+
+  role_level: _Role_Level_ @search(by: [exact])
+
+  # Nature of employment/engagement
+  engagement_type: _Engagement_Type_ @search(by: [exact])
+
+  # Compensation Basis
+  compensation_basis: _Compensation_Basis_ @search(by: [exact])
+
+  # provides a simple way to flag whether a role aligns with the conventional understanding
+  # of a regular, salaried government employee operating under standard government service rules,
+  # benefits (like pensions, regular pay scales, leave policies), and recruitment procedures.
+  # _Engagement_Type_: Appointed_Bureaucratic and _Compensation_Basis_: Salary_Statutory_Scale
+  # would almost certainly have is_formal_employee: true
+  # _Engagement_Type_: Appointed_Incentive_Based and _Compensation_Basis_: Incentive_Based
+  # would clearly have is_formal_employee: false
+  # Elected officials (_Engagement_Type_: Elected) technically aren't "employees" in the
+  # master-servant sense, but you might decide to set is_formal_employee: true
+  is_formal_employee: Boolean
 
   # description of the role.
   description: String
