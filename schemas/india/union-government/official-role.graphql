@@ -69,8 +69,8 @@ enum _Government_Branches_ {
 }
 
 # across all branches i.e. legislative, executive, judiciary
-# focuses on the union government
-type _Indian_Union_Government_Official_Role_ {
+# focuses on government at all levels
+type _Indian_Government_Official_Role_ {
   id: ID!
 
   name_id: String! @id @search(by: [exact, term, fulltext])
