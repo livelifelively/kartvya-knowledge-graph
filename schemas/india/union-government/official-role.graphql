@@ -22,9 +22,12 @@ enum _Role_Level_ {
   State # Primarily operating at State level (though could be Union Cadre)
   District # District administration level
   Block # Block/Tehsil level
-  Constituency # Specific to electoral constituencies (e.g., MP)
-  Community_Village # Grassroots level
-  Local_Body # Municipal/Panchayat level (if including these)
+  Loksabha_Constituency # Specific to electoral constituencies (e.g., MP)
+  Rajyasabha_Constituency
+  Vidhansabha_Constituency
+  Panchayat #
+  Village
+  Municipal_Ward
   Institutional # Specific to a particular institution/organization
   International # e.g., Ambassadors
 }
