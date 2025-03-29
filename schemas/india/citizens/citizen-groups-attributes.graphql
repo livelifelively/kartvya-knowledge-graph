@@ -50,6 +50,9 @@ type _Citizen_Group_Attribute_Category_ {
   policy_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
     @hasInverse(field: "citizen_group_attributes")
 
+  # Issues affecting citizen groups with this attribute
+  affected_by_issues: [_Domain_Issue_] @hasInverse(field: "affected_citizen_group_attributes")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }

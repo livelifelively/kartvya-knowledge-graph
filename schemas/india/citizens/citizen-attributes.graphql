@@ -48,6 +48,9 @@ type _Citizen_Attribute_Category_ {
   # Active version of this attribute category
   active_version: _Citizen_Attribute_Category_Version_
 
+  # Issues affecting citizens with this attribute
+  affected_by_issues: [_Domain_Issue_] @hasInverse(field: "affected_citizen_attributes")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }

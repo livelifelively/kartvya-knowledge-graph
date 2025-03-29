@@ -22,6 +22,12 @@ type _Indian_Union_Government_Policy_Domain_Objective_ {
 
   addressed_by_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "addresses_objectives")
 
+  # Issues this objective addresses
+  addresses_issues: [_Domain_Issue_] @hasInverse(field: "addressed_by_objectives")
+
+  # Success metrics for this objective
+  success_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "used_by_policy_objectives")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }

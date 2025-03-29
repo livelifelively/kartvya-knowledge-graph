@@ -1,0 +1,136 @@
+# Issues/problems that need to be addressed in specific policy domains
+# Examples: NCDs in health, farmer suicides in agriculture, gender wage gap in labor
+type _Domain_Issue_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "domain_issues")
+
+  # Description of the issue
+  description: String @search(by: [fulltext])
+
+  # Policy domain(s) this issue belongs to
+  policy_domains: [_Public_Policy_Domain_] @hasInverse(field: "domain_issues")
+
+  # Related issues that connect to this issue
+  related_issues: [_Domain_Issue_]
+
+  # Policy objectives that aim to address this issue
+  addressed_by_objectives: [_Indian_Union_Government_Policy_Domain_Objective_] @hasInverse(field: "addresses_issues")
+
+  # Ministries and departments dealing with this issue
+  # addressed_by_ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "domain_issues")
+  # addressed_by_departments: [_Indian_Union_Government_Department_] @hasInverse(field: "domain_issues")
+
+  # Citizen groups affected by this problem (using attribute-based approach)
+  affected_citizen_attributes: [_Citizen_Attribute_Category_] @hasInverse(field: "affected_by_issues")
+  affected_citizen_group_attributes: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "affected_by_issues")
+
+  # Geographic scope/regions affected
+  affected_states: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "affected_by_issues")
+  affected_districts: [_Indian_District_Version_Region_] @hasInverse(field: "affected_by_issues")
+
+  # Metrics measuring this issue
+  measured_by_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "measures_issues")
+  # Policy documents that mention this issue
+  mentioned_in_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "mentions_issues")
+
+  # Reference fields
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Simple connector between domain issues and metrics
+type _Domain_Issue_Metric_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "domain_issue_metrics")
+
+  # Link to the core metric definition
+  base_metric: _Metric_! @hasInverse(field: "domain_issue_applications")
+
+  # Short name or abbreviation (e.g., "MMR" for Maternal Mortality Ratio)
+  abbreviation: String @search(by: [hash, exact])
+
+  # Description of how this metric relates to the issue
+  description: String @search(by: [fulltext])
+
+  # Domain issues this metric measures
+  measures_issues: [_Domain_Issue_] @hasInverse(field: "measured_by_metrics")
+
+  # Policy objectives using this metric as an indicator
+  used_by_policy_objectives: [_Indian_Union_Government_Policy_Domain_Objective_] @hasInverse(field: "success_metrics")
+
+  # Direction of measurement (is higher better or worse?)
+  what_is_good: String # "Lower is better" or "Higher is better"
+  # Current value at national level
+  current_value: Float
+
+  # Measurement unit and metadata
+  unit: String
+  data_source: String
+  last_updated: DateTime
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Categorization of domain issues
+enum _Domain_Issue_Category_ {
+  SOCIAL
+  ECONOMIC
+  ENVIRONMENTAL
+  HEALTH
+  EDUCATIONAL
+  INFRASTRUCTURE
+  GOVERNANCE
+  SECURITY
+}
+
+# Severity levels for domain issues
+enum _Domain_Issue_Severity_ {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+# Geographic scope of issues
+enum _Domain_Issue_Geographic_Scope_ {
+  NATIONAL
+  REGIONAL
+  STATE_LEVEL
+  DISTRICT_LEVEL
+  LOCAL
+}
+
+# Basic relationships between domain issues
+# For causal, correlational, or hierarchical relationships
+type _Domain_Issue_Relationship_ {
+  id: ID!
+
+  source_issue: _Domain_Issue_
+  target_issue: _Domain_Issue_
+
+  # Type of relationship
+  relationship_type: _Domain_Issue_Relationship_Type_ @search(by: [hash])
+
+  # Description of the relationship
+  description: String
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+enum _Domain_Issue_Relationship_Type_ {
+  CAUSES
+  CORRELATES_WITH
+  SUBSET_OF
+  PREDECESSOR_OF
+  AGGRAVATES
+  MITIGATES
+}

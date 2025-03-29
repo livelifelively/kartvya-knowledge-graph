@@ -17,6 +17,9 @@ type _Metric_ {
 
   units: [_Metric_Unit_!]! @hasInverse(field: "metric")
   dataType: _Metric_Data_Type_!
+
+  # Domain issue applications of this metric
+  domain_issue_applications: [_Domain_Issue_Metric_] @hasInverse(field: "base_metric")
 }
 
 type _Metric_Unit_ {

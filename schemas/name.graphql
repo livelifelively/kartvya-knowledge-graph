@@ -108,4 +108,7 @@ type _Name_ {
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]
+
+  domain_issues: [_Domain_Issue_] @hasInverse(field: "names")
+  domain_issue_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "names")
 }
