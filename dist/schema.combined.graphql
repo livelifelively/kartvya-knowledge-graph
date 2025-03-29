@@ -186,7 +186,7 @@ type _Name_ {
 
   indian_union_government_department: [_Indian_Union_Government_Department_] @hasInverse(field: "names")
   indian_union_government_ministry: [_Indian_Union_Government_Ministry_] @hasInverse(field: "names")
-  indian_union_government_official_role: [_Indian_Union_Government_Official_Role_] @hasInverse(field: "names")
+  indian_government_official_role: [_Indian_Government_Official_Role_] @hasInverse(field: "names")
 
   indian_union_parliament_loksabha: [_Indian_Loksabha_] @hasInverse(field: "names")
 
@@ -242,6 +242,9 @@ type _Name_ {
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]
+
+  domain_issues: [_Domain_Issue_] @hasInverse(field: "names")
+  domain_issue_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "names")
 }
 
 # ----- END name.graphql ----- 
@@ -598,6 +601,9 @@ type _Metric_ {
 
   units: [_Metric_Unit_!]! @hasInverse(field: "metric")
   dataType: _Metric_Data_Type_!
+
+  # Domain issue applications of this metric
+  domain_issue_applications: [_Domain_Issue_Metric_] @hasInverse(field: "base_metric")
 }
 
 type _Metric_Unit_ {
@@ -1080,6 +1086,8 @@ type _Public_Policy_Domain_ {
 
   citizen_followers: [_Citizen_Profile_] @hasInverse(field: "policy_domains")
 
+  domain_issues: [_Domain_Issue_] @hasInverse(field: "policy_domains")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }
@@ -1190,37 +1198,6 @@ type _Indian_Government_System_ {
   node_updates: [_Node_Update_]
 }
 
-enum _Government_Branches_ {
-  Legislative
-  Executive
-  Judiciary
-}
-
-# across all branches i.e. legislative, executive, judiciary
-# across all government levels i.e. Union, State, Municipality
-type _Indian_Union_Government_Official_Role_ {
-  id: ID!
-
-  name_id: String! @id @search(by: [exact, term, fulltext])
-  names: [_Name_] @hasInverse(field: "indian_union_government_official_role")
-
-  # description of the role.
-  description: String
-
-  # link to the role_based_types nodes
-  prime_ministers: [_Indian_Prime_Minister_] @hasInverse(field: "indian_union_government_official_role")
-  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "indian_union_government_official_role")
-  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_]
-    @hasInverse(field: "indian_union_government_official_role")
-  minister_of_state: [_Indian_Union_Government_Minister_Of_State_]
-    @hasInverse(field: "indian_union_government_official_role")
-  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
-    @hasInverse(field: "indian_union_government_official_role")
-
-  node_created_on: DateTime
-  node_updates: [_Node_Update_]
-}
-
 # kind of like a version group of the union government
 # CREATE_NEW:
 # 1. whenever the PM changes;
@@ -1258,7 +1235,7 @@ type _Indian_Union_Government_ {
 type _Indian_Prime_Minister_ {
   id: ID!
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "prime_ministers")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "prime_ministers")
   position_held_by: _Indian_Politician_Version_ @hasInverse(field: "prime_minister")
 
   # during tenure
@@ -1315,7 +1292,7 @@ type _Indian_Union_Government_Cabinet_Minister_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "cabinet_ministers")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "cabinet_ministers")
 
   position_held_by: _Indian_Politician_Version_ @hasInverse(field: "cabinet_minister")
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister")
@@ -1339,7 +1316,7 @@ type _Indian_Union_Government_Minister_Of_State_Independent_Charge_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_
+  indian_government_official_role: _Indian_Government_Official_Role_
     @hasInverse(field: "minister_of_state_independent_charge")
 
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state_independent_charge")
@@ -1363,7 +1340,7 @@ type _Indian_Union_Government_Minister_Of_State_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "minister_of_state")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "minister_of_state")
 
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state")
 
@@ -1378,6 +1355,126 @@ type _Indian_Union_Government_Minister_Of_State_ {
 }
 
 # ----- END india/union-government/indian-government.graphql ----- 
+
+# ----- india/union-government/official-role.graphql ----- 
+# Enum for classifying the primary functional category of the role
+enum _Role_Category_ {
+  Political_Leadership # e.g., PM, Minister
+  Senior_Bureaucracy # e.g., Secretary, Director General
+  Middle_Bureaucracy # e.g., Director, Under Secretary
+  Administrative_Support # e.g., Clerical staff (if modeled)
+  Legislative_Representative # e.g., MP
+  Judicial_Officer # e.g., Judge, Magistrate
+  Constitutional_Office # e.g., President, CAG, EC
+  Regulatory_Head # e.g., Head of SEBI, TRAI
+  Scheme_Delivery_Agent # General category for program workers
+  Community_Health_Mobilization # Specific category for roles like ASHA
+  Community_Education_Support # Specific category for roles like Anganwadi Worker
+  Law_Enforcement # e.g., IPS officers (if modeled at role level)
+  Military_Leadership # e.g., Chiefs of Staff (if modeled)
+  Other # Catch-all for roles not fitting above
+}
+
+# Enum for the primary operational level of the role
+enum _Role_Level_ {
+  National # Central government, nationwide scope
+  State # Primarily operating at State level (though could be Union Cadre)
+  District # District administration level
+  Block # Block/Tehsil level
+  Loksabha_Constituency # Specific to electoral constituencies (e.g., MP)
+  Rajyasabha_Constituency
+  Vidhansabha_Constituency
+  Panchayat #
+  Village
+  Municipal_Ward
+  Institutional # Specific to a particular institution/organization
+  International # e.g., Ambassadors
+}
+
+# Enum for the nature of how the person assumes the role
+enum _Engagement_Type_ {
+  Elected # Through popular vote
+  Appointed_Political # Political appointments (e.g., Ministers, Governors)
+  Appointed_Bureaucratic # Through civil services exams/promotion (e.g., IAS, IFS)
+  Appointed_Judicial # Through judicial appointment process
+  Appointed_Constitutional # Specific appointment process for constitutional posts
+  Appointed_Contractual # Hired on a contract basis
+  Appointed_Incentive_Based # Designated and paid based on performance/tasks (e.g., ASHA)
+  Designated_Volunteer # Formally designated volunteer role
+  Deputation # Transferred from another service/dept
+  Nominated # e.g., some Rajya Sabha members
+}
+
+# Enum for the basis of remuneration for the role
+enum _Compensation_Basis_ {
+  Salary_Statutory_Scale # Following defined government pay scales
+  Salary_Consolidated # A fixed consolidated pay, not on a scale
+  Incentive_Based # Payment tied to specific completed tasks/targets
+  Honorarium # A nominal payment, not a full salary
+  Per_Diem # Payment based on days worked or attended
+  Volunteer_Unpaid # No direct monetary compensation (or expenses only)
+  Statutory_Emoluments # Specific pay/perks defined by law (e.g., President, MP)
+}
+
+# Enum for Government Branches (making it an Enum as well)
+enum _Government_Branches_ {
+  Legislative
+  Executive
+  Judiciary
+  Constitutional_Body # For independent bodies like EC, CAG
+  Regulatory_Body # For statutory regulatory bodies
+  Program_Implementation # For roles primarily executing specific schemes/programs
+  Quasi_Judicial
+}
+
+# across all branches i.e. legislative, executive, judiciary
+# focuses on government at all levels
+type _Indian_Government_Official_Role_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_] @hasInverse(field: "indian_government_official_role")
+
+  role_branch: _Government_Branches_
+
+  role_category: _Role_Category_ @search(by: [exact])
+
+  role_level: _Role_Level_ @search(by: [exact])
+
+  # Nature of employment/engagement
+  engagement_type: _Engagement_Type_ @search(by: [exact])
+
+  # Compensation Basis
+  compensation_basis: _Compensation_Basis_ @search(by: [exact])
+
+  # provides a simple way to flag whether a role aligns with the conventional understanding
+  # of a regular, salaried government employee operating under standard government service rules,
+  # benefits (like pensions, regular pay scales, leave policies), and recruitment procedures.
+  # _Engagement_Type_: Appointed_Bureaucratic and _Compensation_Basis_: Salary_Statutory_Scale
+  # would almost certainly have is_formal_employee: true
+  # _Engagement_Type_: Appointed_Incentive_Based and _Compensation_Basis_: Incentive_Based
+  # would clearly have is_formal_employee: false
+  # Elected officials (_Engagement_Type_: Elected) technically aren't "employees" in the
+  # master-servant sense, but you might decide to set is_formal_employee: true
+  is_formal_employee: Boolean
+
+  # description of the role.
+  description: String
+
+  # link to the role_based_types nodes
+  prime_ministers: [_Indian_Prime_Minister_] @hasInverse(field: "indian_government_official_role")
+  cabinet_ministers: [_Indian_Union_Government_Cabinet_Minister_] @hasInverse(field: "indian_government_official_role")
+  minister_of_state: [_Indian_Union_Government_Minister_Of_State_] @hasInverse(field: "indian_government_official_role")
+  minister_of_state_independent_charge: [_Indian_Union_Government_Minister_Of_State_Independent_Charge_]
+    @hasInverse(field: "indian_government_official_role")
+
+  loksabha_members: [_Indian_Loksabha_Member_] @hasInverse(field: "indian_government_official_role")
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# ----- END india/union-government/official-role.graphql ----- 
 
 # ----- india/parliament.graphql ----- 
 # CREATE_NEW: whenever new loksabha is elected
@@ -1433,7 +1530,7 @@ type _Indian_Loksabha_Session_ {
 type _Indian_Loksabha_Member_ {
   id: ID!
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "loksabha_members")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "loksabha_members")
 
   loksabha: _Indian_Loksabha_ @hasInverse(field: "members")
   constituency_election_result: _Indian_Loksabha_Constituency_Election_Result_ @hasInverse(field: "winner")
@@ -1657,6 +1754,146 @@ type _Indian_Political_Party_Member_ {
 
 # ----- END india/elections/political-parties.graphql ----- 
 
+# ----- india/ministeries-departments/domain-issues.graphql ----- 
+# Issues/problems that need to be addressed in specific policy domains
+# Examples: NCDs in health, farmer suicides in agriculture, gender wage gap in labor
+type _Domain_Issue_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "domain_issues")
+
+  # Description of the issue
+  description: String @search(by: [fulltext])
+
+  # Policy domain(s) this issue belongs to
+  policy_domains: [_Public_Policy_Domain_] @hasInverse(field: "domain_issues")
+
+  # Related issues that connect to this issue
+  related_issues: [_Domain_Issue_]
+
+  # Policy objectives that aim to address this issue
+  addressed_by_objectives: [_Indian_Union_Government_Policy_Domain_Objective_] @hasInverse(field: "addresses_issues")
+
+  # Ministries and departments dealing with this issue
+  # addressed_by_ministries: [_Indian_Union_Government_Ministry_] @hasInverse(field: "domain_issues")
+  # addressed_by_departments: [_Indian_Union_Government_Department_] @hasInverse(field: "domain_issues")
+
+  # Citizen groups affected by this problem (using attribute-based approach)
+  affected_citizen_attributes: [_Citizen_Attribute_Category_] @hasInverse(field: "affected_by_issues")
+  affected_citizen_group_attributes: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "affected_by_issues")
+
+  # Geographic scope/regions affected
+  # affected_states: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "affected_by_issues")
+  # affected_districts: [_Indian_District_Version_Region_] @hasInverse(field: "affected_by_issues")
+
+  # Metrics measuring this issue
+  measured_by_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "measures_issues")
+  # Policy documents that mention this issue
+  # mentioned_in_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "mentions_issues")
+
+  # Reference fields
+  wikidata_qid: String @search(by: [hash])
+  wikipedia_page: String @search(by: [fulltext])
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Simple connector between domain issues and metrics
+type _Domain_Issue_Metric_ {
+  id: ID!
+
+  name_id: String! @id @search(by: [exact, term, fulltext])
+  names: [_Name_!]! @hasInverse(field: "domain_issue_metrics")
+
+  # Link to the core metric definition
+  base_metric: _Metric_! @hasInverse(field: "domain_issue_applications")
+
+  # Short name or abbreviation (e.g., "MMR" for Maternal Mortality Ratio)
+  abbreviation: String @search(by: [exact])
+
+  # Description of how this metric relates to the issue
+  description: String @search(by: [fulltext])
+
+  # Domain issues this metric measures
+  measures_issues: [_Domain_Issue_] @hasInverse(field: "measured_by_metrics")
+
+  # Policy objectives using this metric as an indicator
+  used_by_policy_objectives: [_Indian_Union_Government_Policy_Domain_Objective_] @hasInverse(field: "success_metrics")
+
+  # Direction of measurement (is higher better or worse?)
+  what_is_good: String # "Lower is better" or "Higher is better"
+  # Current value at national level
+  current_value: Float
+
+  # Measurement unit and metadata
+  unit: String
+  data_source: String
+  last_updated: DateTime
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+# Categorization of domain issues
+enum _Domain_Issue_Category_ {
+  SOCIAL
+  ECONOMIC
+  ENVIRONMENTAL
+  HEALTH
+  EDUCATIONAL
+  INFRASTRUCTURE
+  GOVERNANCE
+  SECURITY
+}
+
+# Severity levels for domain issues
+enum _Domain_Issue_Severity_ {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+# Geographic scope of issues
+enum _Domain_Issue_Geographic_Scope_ {
+  NATIONAL
+  REGIONAL
+  STATE_LEVEL
+  DISTRICT_LEVEL
+  LOCAL
+}
+
+# Basic relationships between domain issues
+# For causal, correlational, or hierarchical relationships
+type _Domain_Issue_Relationship_ {
+  id: ID!
+
+  source_issue: _Domain_Issue_
+  target_issue: _Domain_Issue_
+
+  # Type of relationship
+  relationship_type: _Domain_Issue_Relationship_Type_ @search(by: [hash])
+
+  # Description of the relationship
+  description: String
+
+  node_created_on: DateTime
+  node_updates: [_Node_Update_]
+}
+
+enum _Domain_Issue_Relationship_Type_ {
+  CAUSES
+  CORRELATES_WITH
+  SUBSET_OF
+  PREDECESSOR_OF
+  AGGRAVATES
+  MITIGATES
+}
+
+# ----- END india/ministeries-departments/domain-issues.graphql ----- 
+
 # ----- india/ministeries-departments/ministeries.graphql ----- 
 # CREATE_NEW:
 # 1. when new government is elected
@@ -1786,6 +2023,12 @@ type _Indian_Union_Government_Policy_Domain_Objective_ {
 
   addressed_by_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "addresses_objectives")
 
+  # Issues this objective addresses
+  addresses_issues: [_Domain_Issue_] @hasInverse(field: "addressed_by_objectives")
+
+  # Success metrics for this objective
+  success_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "used_by_policy_objectives")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }
@@ -1883,6 +2126,9 @@ type _Citizen_Attribute_Category_ {
 
   # Active version of this attribute category
   active_version: _Citizen_Attribute_Category_Version_
+
+  # Issues affecting citizens with this attribute
+  affected_by_issues: [_Domain_Issue_] @hasInverse(field: "affected_citizen_attributes")
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]
@@ -2000,6 +2246,9 @@ type _Citizen_Group_Attribute_Category_ {
 
   policy_objective_versions: [_Indian_Union_Government_Policy_Domain_Objective_Version_]
     @hasInverse(field: "citizen_group_attributes")
+
+  # Issues affecting citizen groups with this attribute
+  affected_by_issues: [_Domain_Issue_] @hasInverse(field: "affected_citizen_group_attributes")
 
   node_created_on: DateTime
   node_updates: [_Node_Update_]

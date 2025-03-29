@@ -57,6 +57,7 @@ export const schemaOrder: SchemaOrderConfig = [
         name: "union-government",
         files: [
           "indian-government.graphql",
+          "official-role.graphql"
         ]
       },
       "parliament.graphql",
@@ -70,6 +71,7 @@ export const schemaOrder: SchemaOrderConfig = [
       {
         name: "ministeries-departments",
         files: [
+          "domain-issues.graphql",
           "ministeries.graphql",
           "health.graphql",
           "policy-domains-objectives.graphql"

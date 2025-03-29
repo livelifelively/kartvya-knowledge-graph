@@ -40,12 +40,6 @@ type _Indian_Government_System_ {
   node_updates: [_Node_Update_]
 }
 
-enum _Government_Branches_ {
-  Legislative
-  Executive
-  Judiciary
-}
-
 # kind of like a version group of the union government
 # CREATE_NEW:
 # 1. whenever the PM changes;
@@ -83,7 +77,7 @@ type _Indian_Union_Government_ {
 type _Indian_Prime_Minister_ {
   id: ID!
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "prime_ministers")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "prime_ministers")
   position_held_by: _Indian_Politician_Version_ @hasInverse(field: "prime_minister")
 
   # during tenure
@@ -140,7 +134,7 @@ type _Indian_Union_Government_Cabinet_Minister_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "cabinet_ministers")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "cabinet_ministers")
 
   position_held_by: _Indian_Politician_Version_ @hasInverse(field: "cabinet_minister")
   ministry: _Indian_Union_Government_Ministry_ @hasInverse(field: "minister")
@@ -164,7 +158,7 @@ type _Indian_Union_Government_Minister_Of_State_Independent_Charge_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_
+  indian_government_official_role: _Indian_Government_Official_Role_
     @hasInverse(field: "minister_of_state_independent_charge")
 
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state_independent_charge")
@@ -188,7 +182,7 @@ type _Indian_Union_Government_Minister_Of_State_ {
   # prime_minister: _Indian_Prime_Minister_
   # government: _Indian_Union_Government_
 
-  indian_union_government_official_role: _Indian_Union_Government_Official_Role_ @hasInverse(field: "minister_of_state")
+  indian_government_official_role: _Indian_Government_Official_Role_ @hasInverse(field: "minister_of_state")
 
   cabinet: _Indian_Union_Government_Cabinet_ @hasInverse(field: "minister_of_state")
 

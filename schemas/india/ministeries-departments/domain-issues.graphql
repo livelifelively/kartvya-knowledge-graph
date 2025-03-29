@@ -27,13 +27,13 @@ type _Domain_Issue_ {
   affected_citizen_group_attributes: [_Citizen_Group_Attribute_Category_] @hasInverse(field: "affected_by_issues")
 
   # Geographic scope/regions affected
-  affected_states: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "affected_by_issues")
-  affected_districts: [_Indian_District_Version_Region_] @hasInverse(field: "affected_by_issues")
+  # affected_states: [_Indian_State_Union_Territory_Version_Region_] @hasInverse(field: "affected_by_issues")
+  # affected_districts: [_Indian_District_Version_Region_] @hasInverse(field: "affected_by_issues")
 
   # Metrics measuring this issue
   measured_by_metrics: [_Domain_Issue_Metric_] @hasInverse(field: "measures_issues")
   # Policy documents that mention this issue
-  mentioned_in_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "mentions_issues")
+  # mentioned_in_policy_documents: [_Indian_Union_Government_Policy_Document_] @hasInverse(field: "mentions_issues")
 
   # Reference fields
   wikidata_qid: String @search(by: [hash])
@@ -54,7 +54,7 @@ type _Domain_Issue_Metric_ {
   base_metric: _Metric_! @hasInverse(field: "domain_issue_applications")
 
   # Short name or abbreviation (e.g., "MMR" for Maternal Mortality Ratio)
-  abbreviation: String @search(by: [hash, exact])
+  abbreviation: String @search(by: [exact])
 
   # Description of how this metric relates to the issue
   description: String @search(by: [fulltext])

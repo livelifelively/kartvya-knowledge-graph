@@ -33,6 +33,8 @@ type _Public_Policy_Domain_ {
 
   citizen_followers: [_Citizen_Profile_] @hasInverse(field: "policy_domains")
 
+  domain_issues: [_Domain_Issue_] @hasInverse(field: "policy_domains")
+
   node_created_on: DateTime
   node_updates: [_Node_Update_]
 }

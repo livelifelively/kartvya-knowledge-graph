@@ -52,7 +52,7 @@ type _Name_ {
 
   indian_union_government_department: [_Indian_Union_Government_Department_] @hasInverse(field: "names")
   indian_union_government_ministry: [_Indian_Union_Government_Ministry_] @hasInverse(field: "names")
-  indian_union_government_official_role: [_Indian_Union_Government_Official_Role_] @hasInverse(field: "names")
+  indian_government_official_role: [_Indian_Government_Official_Role_] @hasInverse(field: "names")
 
   indian_union_parliament_loksabha: [_Indian_Loksabha_] @hasInverse(field: "names")
 
