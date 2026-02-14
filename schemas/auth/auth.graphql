@@ -31,7 +31,7 @@ type User {
   id: ID!
 
   name: String
-  email: String @id
+  email: String! @id
   emailVerified: DateTime
   image: String
   accounts: [Account] @hasInverse(field: "user")
